@@ -1,0 +1,56 @@
+doctype html
+html
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible" content="IE=edge")
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+
+        // jQuery
+        script(src="/bower_components/jquery/dist/jquery.min.js")
+
+        // page controls
+        script(src="/js/lib.js")
+        script(src="/js/signin.js")
+
+        // bootstrap
+        link(rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css")
+        script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
+
+        // bootstrap-social and font-awesome
+
+        link(rel="stylesheet" href="/bower_components/bootstrap-social/bootstrap-social.css")
+        link(rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css")
+
+        //custom
+        link(rel="stylesheet" href="/styles/login-form.css")
+        title #{pageTitle}
+    body
+        .container
+            form.form-signin(action="/login" method="post")
+                h2.form-signin-heading Please sign in
+
+                label.sr-only(for="email") Email
+                label.sr-only(for="password") Password
+
+                input#email.form-control(
+                    name="email" type="email" placeholder="Email address" required autofocus
+                )
+                input#password.form-control(
+                    name="password" type="password" placeholder="Password" required
+                )
+
+                .checkbox
+                    label
+                        input(type="checkbox" value="remember-me" checked)
+                        | Remember me
+
+                button.btn.btn-lg.btn-primary.btn-block(type="submit") Sign in
+                br
+                a.reg-link(href="/register") Create account
+                hr
+                - var sb_title = "You also may sign with:"
+                include components/social-buttons.jade
+
+    if authError
+        script
+            | showErrorMessage("Incorrect email or password. Please try again");

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--jQuery-->
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+
+    <!--page controls-->
+    <script src="../js/lib.js"></script>
+    <script src="../js/register.js"></script>
+
+    <!--bootstrap-->
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <!--bootstrap-social and font-awesome-->
+    <link rel="stylesheet" href="../bower_components/bootstrap-social/bootstrap-social.css"/>
+    <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.css"/>
+
+    <!--custom-->
+    <link rel="stylesheet" href="../styles/login-form.css"/>
+
+    <title>Register</title>
+</head>
+<body>
+<div class="container">
+    <form class="form-signin" action="/newUser" onsubmit="return validateForm()" method="post">
+        <h2 class="form-signin-heading">Create your account</h2>
+
+        <label class="sr-only" for="email">Email</label>
+        <label class="sr-only" for="password">Password</label>
+        <label class="sr-only" for="name">Name</label>
+
+        <input id="email" name="email" class="form-control" type="email" placeholder="Email address" required autofocus>
+        <input id="password" name="password" class="form-control" type="password" placeholder="Password" required>
+        <input id="name" name="name" class="form-control" type="text" placeholder="Your name" required>
+
+        <button class="btn btn-lg btn-primary btn-block btn-sign-up" type="submit">
+            Sign up
+        </button>
+        <hr>
+
+        <div class="social-block">
+            <div class="sb-title">Or just use one of your accounts:</div>
+
+            <a class="btn btn-social-icon btn-github">
+                <i class="fa fa-github"></i>
+            </a>
+            <div id="g-plus-btn" class="btn btn-social-icon btn-google-plus">
+                <i class="fa fa-google-plus"></i>
+            </div>
+            <a class="btn btn-social-icon btn-facebook">
+                <i class="fa fa-facebook"></i>
+            </a>
+            <a class="btn btn-social-icon btn-twitter">
+                <i class="fa fa-twitter"></i>
+            </a>
+            <a class="btn btn-social-icon btn-linkedin">
+                <i class="fa fa-linkedin"></i>
+            </a>
+        </div>
+    </form>
+</div>
+</body>

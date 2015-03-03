@@ -1,0 +1,12 @@
+{
+  "port": 8080,
+  "mongoose": {
+    "uri": "mongodb://localhost/tdb"
+  },
+  "session": {
+    "secret": "my very secret key",
+    "name": "sid",
+    "saveUninitialized": "false",
+    "resave": "false"
+  }
+}

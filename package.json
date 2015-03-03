@@ -1,0 +1,23 @@
+{
+  "name": "MyProgress",
+  "version": "1.0.0",
+  "description": "Simple task manager",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.11.0",
+    "connect-mongo": "^0.7.0",
+    "crypto": "0.0.3",
+    "express": "^4.11.1",
+    "express-session": "^1.10.3",
+    "jade": "^1.9.2",
+    "mongoose": "^3.8.22",
+    "nconf": "^0.7.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Alendorff",
+  "license": "MIT"
+}

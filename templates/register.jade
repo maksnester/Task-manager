@@ -1,0 +1,44 @@
+doctype html
+html
+   head
+      meta(charset="UTF-8")
+      meta(http-equiv="X-UA-Compatible" content="IE=edge")
+      meta(name="viewport" content="width=device-width, initial-scale=1")
+      // jQuery
+      script(src="/bower_components/jquery/dist/jquery.min.js")
+
+      // page controls
+      script(src="/js/lib.js")
+      script(src="/js/register.js")
+
+      // bootstrap
+      link(rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css")
+      script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
+
+      // bootstrap-social and font-awesome
+      link(rel="stylesheet" href="/bower_components/bootstrap-social/bootstrap-social.css")
+      link(rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css")
+
+      // custom
+      link(rel="stylesheet" href="/styles/login-form.css")
+      title #{pageTitle}
+
+   body
+      div.container
+      form.form-signin(action="/newUser" onsubmit="return validateForm()" method="post")
+         h2.form-signin-heading Create your account
+         label.sr-only(for="email") Email
+         label.sr-only(for="password") Password
+         label.sr-only(for="name") Name
+
+         input#email.form-control(name="email" type="email" placeholder="Email address" required autofocus)
+         input#password.form-control(name="password" type="password" placeholder="Password" required)
+         input#name.form-control(name="name" type="text" placeholder="Your name" required)
+
+         button.btn.btn-lg.btn-primary.btn-block.btn-sign-up(type="submit") Sign up
+
+         hr
+
+         - var sb_title = "Or just use one of your accounts:"
+
+         include components/social-buttons.jade

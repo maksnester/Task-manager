@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!--roboto-->
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <!--font-awesome-->
+    <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.css"/>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--jquery-->
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+
+    <!--bootstrap-->
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <!--custom-->
+    <link rel="stylesheet" href="../styles/projects.css"/>
+
+    <title>List of projects</title>
+</head>
+<body>
+    <!--top-nav-menu-->
+    <div id="page-header"></div>
+
+    <!--list of projects header-->
+    <div id="projects-list" class="container">
+        <div class="row">
+            <div id="list-header">List of your projects</div>
+        </div>
+        <div id="col-headers" class="row">
+            <div id="date-header">Date</div>
+            <div id="title-header">Title</div>
+        </div>
+
+        <!--main content-->
+        <div class="col-md-12">
+            <div class="project" onclick="showProject(this)">
+                <div class="project-title">
+                    Some project title
+                    <span class="glyphicon glyphicon-arrow-right goto-button"></span>
+                </div>
+                <div class="description">
+                    <!--description is hidden by default. Show when click prev block-->
+                    <div class="row info">
+                        <div class="col-md-2">tasks: 38</div>
+                        <div class="col-md-2">completed: 6</div>
+                        <div class="col-md-5">time spent: 3m 21d 10h</div>
+                        <div class="col-md-3">members: 5</div>
+                    </div>
+                    <div class="row controls">
+                        <div class="del col-md-1">
+                            <i class="fa fa-trash"></i>
+                        </div>
+                        <div class="share">
+                            <i class="fa fa-eye"></i>
+                        </div>
+                        <div class="group">
+                            <i class="fa fa-group"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--body of list-->
+
+
+    <script type="text/javascript">
+
+        /**
+         * Отображает более подробную информацию о проекте.
+         * @param project - элемент DOM
+         */
+        var showProject = function(project) {
+            var moreInfo = project.getElementsByClassName('description')[0];
+            moreInfo.style.display = (moreInfo.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>

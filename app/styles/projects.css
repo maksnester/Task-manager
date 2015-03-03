@@ -1,0 +1,69 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+#page-header {
+    width: 100%;
+    height: 120px;
+    background-color: #2196F3;
+    box-shadow: 2px 4px 12px -4px rgba(0,0,0,0.75);
+}
+
+@media (max-width: 700px) {
+    #page-header {
+        height: 50px;
+    }
+}
+
+#projects-list {
+    max-width: 700px;
+}
+
+#list-header {
+    text-align: center;
+    font-size: xx-large;
+    padding-top: 30px;
+    font-family: monospace;
+}
+
+
+#col-headers {
+    margin-top: 10px;
+}
+
+#date-header {
+    margin-left: 10px;
+    width: 30px;
+    float: left;
+}
+
+#title-header {
+    margin-left: 40px;
+    float: left;
+}
+
+.project {
+    cursor: pointer;
+}
+
+.project:hover {
+    background-color: #d9edf7;
+}
+
+.description {
+    display: none;
+}
+
+.del {
+    float: left;
+}
+
+.group {
+    float: right;
+    margin-right: 20px;
+}
+
+.share {
+    float: right;
+    margin-right: 20px;
+}
