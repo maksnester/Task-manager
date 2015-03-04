@@ -8,7 +8,7 @@ var checkAuth = require('routes/authRoutes').checkAuth;
 
 
 projectsRoutes.use('/projects', checkAuth, function(req, res) {
-   res.render('projects.jade');
+   res.render('projects.jade', {user: req.session.user_id});
 });
 
 module.exports = projectsRoutes;

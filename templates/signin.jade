@@ -1,30 +1,20 @@
 doctype html
 html
     head
-        meta(charset="UTF-8")
-        meta(http-equiv="X-UA-Compatible" content="IE=edge")
-        meta(name="viewport" content="width=device-width, initial-scale=1")
 
-        // jQuery
-        script(src="/bower_components/jquery/dist/jquery.min.js")
+        include components/common-includes.jade
 
-        // page controls
-        script(src="/js/lib.js")
-        script(src="/js/signin.js")
-
-        // bootstrap
-        link(rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css")
-        script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
-
-        // bootstrap-social and font-awesome
-
+        // bootstrap-social
         link(rel="stylesheet" href="/bower_components/bootstrap-social/bootstrap-social.css")
-        link(rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css")
+
 
         //custom
         link(rel="stylesheet" href="/styles/login-form.css")
+        script(src="/js/lib.js")
+        script(src="/js/signin.js")
         title #{pageTitle}
     body
+        include components/navbar.jade
         .container
             form.form-signin(action="/login" method="post")
                 h2.form-signin-heading Please sign in

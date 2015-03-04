@@ -34,7 +34,6 @@ app.use('/st', function(req, res) {
     res.send("Count = " + req.session.myCount);
 });
 
-
 //use routes for login, registration and etc.
 var authRoutes = require('./routes/authRoutes');
 app.use('/', authRoutes);
@@ -48,6 +47,11 @@ app.use('/forbidden', function(req, res, next) {
 });
 
 app.use(express.static(__dirname + '/app'));
+
+app.use('/', function(req, res) {
+    res.render('main.jade', {user: req.session.user_id});
+});
+
 
 //Выполняется в том случае, когда не было найдено других вариантов
 app.use(function(req, res){

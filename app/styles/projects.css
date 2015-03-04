@@ -2,24 +2,12 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
-#page-header {
-    width: 100%;
-    height: 120px;
-    background-color: #2196F3;
-    box-shadow: 2px 4px 12px -4px rgba(0,0,0,0.75);
-}
-
-@media (max-width: 700px) {
-    #page-header {
-        height: 50px;
-    }
-}
-
 #projects-list {
     max-width: 700px;
 }
 
 #list-header {
+    margin-top: 60px;
     text-align: center;
     font-size: xx-large;
     padding-top: 30px;
