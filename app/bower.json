@@ -13,6 +13,8 @@
   ],
   "dependencies": {
     "bootstrap": "~3.3.2",
-    "bootstrap-social": "~4.8.0"
+    "bootstrap-social": "~4.8.0",
+    "font-awesome": "~4.3.0",
+    "jquery": "~2.1.3"
   }
 }
