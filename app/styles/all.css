@@ -1,3 +1,6 @@
+div[role="navigation"] {
+    box-shadow: 0 0 3px 0 rgba(0,0,0,0.35);
+}
 ul.nav > li:hover {
     background-color: rgba(234, 235, 237, 0.59)
 }

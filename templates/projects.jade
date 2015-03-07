@@ -19,28 +19,25 @@ html
                 div#list-header List of your projects
 
             div#col-headers.row
-                div#date-header Date
-                div#title-header Title
+                div#date-header Last modified
+                div#title-header Project
 
             //main content
-            div.row
+            div.row.list
                 each project in projects
                     div.project(onclick="showProject(this)").container-fluid
-                        div.project-title.row
+                        div.row
                             .col-xs-2 #{project.lastModified}
-                            .col-xs-10 #{project.title}
-                                span.glyphicon.glyphicon-arrow-right.goto-button
+                            .col-xs-10.project-title #{project.title}
                         div.description.container-fluid
                             //description is hidden by default. Show when click prev block
                             div.row.info
-                                div.col-xs-2 tasks: #{project.tasks}
-                                div.col-xs-2 completed: #{project.completed}
-                                div.col-xs-5 time spent: #{project.timeSpent}
-                                div.col-xs-3 members: #{project.members}
-                            div.row.controls
-                                div.del.col-xs-1
-                                    i.fa.fa-trash
-                                div.share.col-xs-1
-                                    i.fa.fa-eye
-                                div.group.col-xs-1
-                                    i.fa.fa-group
+                                div.col-xs-3.col-xs-offset-2.stat
+                                    |tasks:&nbsp;
+                                    span.tasksAmount #{project.tasks}
+                                    |/
+                                    span.completedTasksAmount #{project.completed}
+                                div.col-xs-3.stat time spent: #{project.timeSpent}
+                                div.col-xs-3.stat members: #{project.members}
+                                div.controls.col-xs-1
+                                    i.fa.fa-group &nbsp;Share
