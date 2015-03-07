@@ -1,0 +1,19 @@
+div.project(onclick="showProject(this)").container-fluid
+    div.project-title.row
+        .col-xs-2 #{lastModified}
+        .col-xs-10 | #{projectTitle}
+            span.glyphicon.glyphicon-arrow-right.goto-button
+    div.description.container-fluid
+        //description is hidden by default. Show when click prev block
+        div.row.info
+            div.col-xs-2 tasks: #{tasks}
+            div.col-xs-2 completed: #{completed}
+            div.col-xs-5 time spent: #{timeSpent}
+            div.col-xs-3 members: #{members}
+        div.row.controls
+            div.del.col-xs-1
+                i.fa.fa-trash
+            div.share.col-xs-1
+                i.fa.fa-eye
+            div.group.col-xs-1
+                i.fa.fa-group

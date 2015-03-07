@@ -1,10 +1,21 @@
 'use strict';
 
-//var bodyParser = require('body-parser');
+Date.prototype.shortDate = function() {
+    var d = this.getDate();
+    var m = this.getMonth() + 1;
+    var y = this.getFullYear();
+
+    d = (d > 9) ? d : "0" + d;
+    m = (m > 9) ? m : "0" + m;
+
+    return d + "." + m + "." + y;
+};
+
 var config = require('config');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 var mongoose = require('lib/mongoose');
+
 
 var express = require('express');
 var app = express();

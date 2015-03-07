@@ -23,24 +23,24 @@ html
                 div#title-header Title
 
             //main content
-            div.col-md-12
-                div.project(onclick="showProject(this)")
-                    div.project-title
-                        | Some project title
-                        span.glyphicon.glyphicon-arrow-right.goto-button
-
-                    div.description
-                        //description is hidden by default. Show when click prev block
-                        div.row.info
-                            div.col-md-2 tasks: 38
-                            div.col-md-2 completed: 6
-                            div.col-md-5 time spent: 3m 21d 10h
-                            div.col-md-3 members: 5
-
-                        div.row.controls
-                            div.del.col-md-1
-                                i.fa.fa-trash
-                            div.share
-                                i.fa.fa-eye
-                            div.group
-                                i.fa.fa-group
+            div.row
+                each project in projects
+                    div.project(onclick="showProject(this)").container-fluid
+                        div.project-title.row
+                            .col-xs-2 #{project.lastModified}
+                            .col-xs-10 #{project.title}
+                                span.glyphicon.glyphicon-arrow-right.goto-button
+                        div.description.container-fluid
+                            //description is hidden by default. Show when click prev block
+                            div.row.info
+                                div.col-xs-2 tasks: #{project.tasks}
+                                div.col-xs-2 completed: #{project.completed}
+                                div.col-xs-5 time spent: #{project.timeSpent}
+                                div.col-xs-3 members: #{project.members}
+                            div.row.controls
+                                div.del.col-xs-1
+                                    i.fa.fa-trash
+                                div.share.col-xs-1
+                                    i.fa.fa-eye
+                                div.group.col-xs-1
+                                    i.fa.fa-group
