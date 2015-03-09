@@ -15,26 +15,14 @@ body {
     font-family: monospace;
 }
 
-#col-headers {
+#headers {
     margin-top: 20px;
     margin-bottom: 10px;
-}
-
-#date-header {
-    margin-left: 10px;
-    width: 120px;
-    float: left;
     font-weight: bold;
 }
 
-#title-header {
-    margin-left: 40px;
-    float: left;
-    font-weight: bold;
-}
-
-.project:first-child {
-    border-top: 1px solid black;
+#date-header, #title-header {
+    line-height: 34px;
 }
 
 .project {
@@ -43,8 +31,19 @@ body {
     border-bottom: 1px solid black;
 }
 
+.project:first-child {
+    border-top: 1px solid black;
+}
+.project:last-child {
+    border-bottom: none;
+}
+
 .project:hover {
     background-color: #d9edf7;
+}
+
+.last-modified {
+    padding-top:8px;
 }
 
 .project-title {
@@ -58,5 +57,40 @@ body {
 }
 
 .description {
-    padding-top: 25px;
+    padding-top: 20px;
+}
+
+.info > .btn {
+    border: none;
+    background-color: transparent;
+}
+
+.info > .btn:hover {
+    background-color: transparent;
+}
+
+#new-project {
+    text-align: center;
+    cursor: pointer;
+}
+#new-project .btn {
+    border-radius: 24px 24px 24px 24px;
+}
+#new-project > .fa-plus-circle {
+    color: green;
+}
+
+@media (max-width: 992px) {
+    #new-project {
+        margin-left: -18px;
+    }
+}
+
+@media (max-width: 694px) {
+    #new-project {
+        margin-left: -34px;
+    }
+    #date-header {
+        line-height: normal;
+    }
 }

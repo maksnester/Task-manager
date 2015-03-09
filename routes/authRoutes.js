@@ -3,7 +3,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var authRoutes = express.Router();
-var mongoose = require('lib/mongoose');
+//var mongoose = require('lib/mongoose');
 var User = require('models/user').User;
 
 //SIGN IN page

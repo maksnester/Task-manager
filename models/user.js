@@ -7,7 +7,10 @@ var schema = new Schema({
     email: {
         type: String,
         unique: true,
-        required: true
+        required: true,
+        set: function(value) {
+            return value.toLowerCase();
+        }
     },
     name: {
         type: String,

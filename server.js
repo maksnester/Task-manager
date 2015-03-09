@@ -59,7 +59,7 @@ app.use('/forbidden', function(req, res, next) {
 
 app.use(express.static(__dirname + '/app'));
 
-app.use('/', function(req, res) {
+app.get('/', function(req, res) {
     res.render('main.jade', {user: req.session.user_id});
 });
 

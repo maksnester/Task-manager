@@ -4,110 +4,40 @@ var express = require('express');
 var projectsRoutes = express.Router();
 //var mongoose = require('lib/mongoose');
 var checkAuth = require('routes/authRoutes').checkAuth;
+var Project = require('models/project').Project;
 
+//lastModified: new Date('03.15.2014').shortDate(),
+//    title: "Some project title e.g. Chat-po-11",
+//    tasks: 150,
+//    completed: 106,
+//    timeSpent: '6w 4d 23h',
+//    members: 7
 
+projectsRoutes.use('/projects', checkAuth, function(req, res, next) {
 
-projectsRoutes.use('/projects', checkAuth, function(req, res) {
-
-   var tempProjectList = [
-      {
-         lastModified: new Date('03.15.2014').shortDate(),
-         title: "Some project title e.g. Chat-po-11",
-         tasks: 150,
-         completed: 106,
-         timeSpent: '6w 4d 23h',
-         members: 7
-      },
-      {
-         lastModified: new Date('10.01.2015').shortDate(),
-         title: "Task-manager project",
-         tasks: 35,
-         completed: 4,
-         timeSpent: '1w 1d 12h',
-         members: 7
-      },
-      {
-         lastModified: new Date().shortDate(),
-         title: "Simple web-site",
-         tasks: 9,
-         completed: 8,
-         timeSpent: '1d 3h',
-         members: 7
-      },
-      {
-         lastModified: new Date('06.03.2015').shortDate(),
-         title: "Cool site for my favorite customer",
-         tasks: 16,
-         completed: 16,
-         timeSpent: '4d 23h',
-         members: 7
-      },
-      {
-         lastModified: new Date('03.15.2014').shortDate(),
-         title: "Some project title e.g. Chat-po-11",
-         tasks: 150,
-         completed: 106,
-         timeSpent: '6w 4d 23h',
-         members: 7
-      },
-      {
-         lastModified: new Date('10.01.2015').shortDate(),
-         title: "Task-manager project",
-         tasks: 35,
-         completed: 4,
-         timeSpent: '1w 1d 12h',
-         members: 7
-      },
-      {
-         lastModified: new Date().shortDate(),
-         title: "Simple web-site",
-         tasks: 9,
-         completed: 8,
-         timeSpent: '1d 3h',
-         members: 7
-      },
-      {
-         lastModified: new Date('06.03.2015').shortDate(),
-         title: "Cool site for my favorite customer",
-         tasks: 16,
-         completed: 16,
-         timeSpent: '4d 23h',
-         members: 7
-      },
-      {
-         lastModified: new Date('03.15.2014').shortDate(),
-         title: "Some project title e.g. Chat-po-11",
-         tasks: 150,
-         completed: 106,
-         timeSpent: '6w 4d 23h',
-         members: 7
-      },
-      {
-         lastModified: new Date('10.01.2015').shortDate(),
-         title: "Task-manager project",
-         tasks: 35,
-         completed: 4,
-         timeSpent: '1w 1d 12h',
-         members: 7
-      },
-      {
-         lastModified: new Date().shortDate(),
-         title: "Simple web-site",
-         tasks: 9,
-         completed: 8,
-         timeSpent: '1d 3h',
-         members: 7
-      },
-      {
-         lastModified: new Date('06.03.2015').shortDate(),
-         title: "Cool site for my favorite customer",
-         tasks: 16,
-         completed: 16,
-         timeSpent: '4d 23h',
-         members: 7
+   Project.find({_owner: req.session.user_id}, function(err, result) {
+      if (err) {
+         console.log("Error when getting list of projects: %s", err);
+         return next(err);
       }
-   ];
-   res.render('projects.jade', {user: req.session.user_id, projects: tempProjectList});
+      console.log(result);
+      var tempProjectList = [];
+      result.forEach(function(obj) {
+         tempProjectList.push(
+             {
+                title    : obj.title,
+                tasks    : obj.tasks.length,
+                completed: obj.completedTasks,
+                timeSpent: obj.timeSpent,
+                members  : obj.members.length,
+                lastMod  : obj.lastMod.shortDate()
+             }
+         );
+      });
+      console.log("___________________________\nResult project list for render: \n___________________________")
+      console.log(tempProjectList);
+      res.render('projects.jade', {user: req.session.user_id, projects: tempProjectList});
+   });
 });
 
 module.exports = projectsRoutes;

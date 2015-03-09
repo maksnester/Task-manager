@@ -18,16 +18,20 @@ html
             div.row
                 div#list-header List of your projects
 
-            div#col-headers.row
-                div#date-header Last modified
-                div#title-header Project
+            #headers.row
+                #date-header.col-xs-2 Last modified
+                #title-header.col-xs-2 Project
+                .col-xs-offset-6.col-xs-2
+                    a#new-project.btn.btn-default(href="/new-project")
+                        span.fa.fa-plus-circle
+                        span#new-project-text &nbsp;New project
 
             //main content
             div.row.list
                 each project in projects
                     div.project(onclick="showProject(this)").container-fluid
                         div.row
-                            .col-xs-2 #{project.lastModified}
+                            .col-xs-2.last-modified #{project.lastMod}
                             .col-xs-10.project-title #{project.title}
                         div.description.container-fluid
                             //description is hidden by default. Show when click prev block
@@ -39,5 +43,5 @@ html
                                     span.completedTasksAmount #{project.completed}
                                 div.col-xs-3.stat time spent: #{project.timeSpent}
                                 div.col-xs-3.stat members: #{project.members}
-                                div.controls.col-xs-1
+                                div.col-xs-1.btn.btn-default
                                     i.fa.fa-group &nbsp;Share
