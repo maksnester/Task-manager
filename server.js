@@ -11,6 +11,24 @@ Date.prototype.shortDate = function() {
     return d + "." + m + "." + y;
 };
 
+Date.prototype.shortTime = function() {
+    var h = this.getHours();
+    var m = this.getMinutes();
+    var s = this.getSeconds();
+    var ms = this.getMilliseconds();
+
+    h = (h > 9) ? h : "0" + h;
+    m = (m > 9) ? m : "0" + m;
+    s = (s > 9) ? s : "0" + s;
+    ms = (ms < 100)
+        ? (ms < 10)
+            ? "00" + ms
+            : "0" + ms
+        : ms;
+
+    return h + ":" + m + ":" + s + ":" + ms;
+};
+
 var config = require('config');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
@@ -27,7 +45,7 @@ app.set('view engine', 'jade');
 
 //simple log
 app.use(function(req, res, next) {
-    console.log(Date.now() + ": requested source - " + req.url);
+    console.log("%s %s requsted source: %s", req.method, new Date().shortTime(), req.url);
     next();
 });
 
@@ -40,7 +58,7 @@ app.use(session({
 }));
 
 //session test
-app.use('/st', function(req, res) {
+app.get('/st', function(req, res) {
     req.session.myCount = req.session.myCount + 1 || 1;
     res.send("Count = " + req.session.myCount);
 });
@@ -53,7 +71,7 @@ var projectsRoutes = require('./routes/projectsRoutes');
 app.use('/', projectsRoutes);
 
 //тест обработчика ошибок
-app.use('/forbidden', function(req, res, next) {
+app.get('/forbidden', function(req, res, next) {
     next(new Error('Forbidden url'));
 });
 

@@ -22,20 +22,32 @@ html
                 #date-header.col-xs-2 Last modified
                 #title-header.col-xs-2 Project
                 .col-xs-offset-6.col-xs-2
-                    a#new-project.btn.btn-default(href="/new-project")
+                    button#new-project.btn.btn-default(type="button" data-toggle="modal" data-target="#newProjectModal")
                         span.fa.fa-plus-circle
                         span#new-project-text &nbsp;New project
+                    #newProjectModal.modal.fade(tabindex="-1" role="dialog" aria-labelleby="newProjectModalLabel")
+                        .modal-dialog
+                            .modal-content
+                                .modal-header
+                                    button.close(type="button" data-dismiss="modal" aria-label="Close") &times;
+                                    h4.modal-title#newProjectModalLabel Create a new project
+                                .modal-body
+                                    input(type="text" placeholder="Project title")
+                                .modal-footer
+                                    button.btn.btn-default(type="button" data-dismiss="modal") Cancel
+                                    button.btn.btn-primary(type="button" onclick="createNewProject()") Save
 
             //main content
             div.row.list
                 each project in projects
-                    div.project(onclick="showProject(this)").container-fluid
+                    div.project(onclick="openProject(this)" data-ouid='#{project._id}').container-fluid
                         div.row
                             .col-xs-2.last-modified #{project.lastMod}
                             .col-xs-10.project-title #{project.title}
+                        //- TODO: переверстать это. Что за контейнер в строке втф...
                         div.description.container-fluid
-                            //description is hidden by default. Show when click prev block
                             div.row.info
+                            if project.tasks
                                 div.col-xs-3.col-xs-offset-2.stat
                                     |tasks:&nbsp;
                                     span.tasksAmount #{project.tasks}
@@ -45,3 +57,5 @@ html
                                 div.col-xs-3.stat members: #{project.members}
                                 div.col-xs-1.btn.btn-default
                                     i.fa.fa-group &nbsp;Share
+                            else
+                                .col-xs-offset-2.col-xs-3 Empty project without tasks

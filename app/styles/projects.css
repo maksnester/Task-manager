@@ -88,9 +88,13 @@ body {
 
 @media (max-width: 694px) {
     #new-project {
-        margin-left: -34px;
+        margin-left: -64px;
     }
     #date-header {
         line-height: normal;
     }
+}
+
+.modal-dialog {
+    margin-top: 90px;
 }

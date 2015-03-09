@@ -3,15 +3,6 @@ var lastMod = require('lib/lastMod');
 var Schema = mongoose.Schema;
 var taskSchema = require('models/task').schema;
 
-//lastModified: new Date('03.15.2014').shortDate(),
-//    title: "Some project title e.g. Chat-po-11",
-//    tasks: 150,
-//    completed: 106,
-//    timeSpent: '6w 4d 23h',
-//    members: 7
-
-
-
 var schema = new Schema({
    title: {
        type: String,

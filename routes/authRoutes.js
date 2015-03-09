@@ -7,13 +7,13 @@ var authRoutes = express.Router();
 var User = require('models/user').User;
 
 //SIGN IN page
-authRoutes.use('/signin', function (req, res) {
+authRoutes.get('/signin', function (req, res) {
     if (req.session.user_id) res.redirect('/projects');
     res.render('signin.jade', {page_title: "Sign in"});
 });
 
 //REGISTER page
-authRoutes.use('/register', function (req, res) {
+authRoutes.get('/register', function (req, res) {
     if (req.session.user_id) res.redirect('/projects');
     res.render('register.jade', {page_title: "Register", user: req.session.user_id});
 });
@@ -29,8 +29,6 @@ authRoutes.post('/newUser', bodyParser.urlencoded({extended: false}), createNewU
 
 //запрос входа по логину и паролю
 authRoutes.post('/login', bodyParser.urlencoded({extended: false}), login);
-
-
 
 //запрос на проверку email при регистрации
 authRoutes.post('/checkEmail', bodyParser.urlencoded({extended: false}), checkEmail);

@@ -2,18 +2,48 @@
 
 var express = require('express');
 var projectsRoutes = express.Router();
-//var mongoose = require('lib/mongoose');
+var bodyParser = require('body-parser');
 var checkAuth = require('routes/authRoutes').checkAuth;
 var Project = require('models/project').Project;
 
-//lastModified: new Date('03.15.2014').shortDate(),
-//    title: "Some project title e.g. Chat-po-11",
-//    tasks: 150,
-//    completed: 106,
-//    timeSpent: '6w 4d 23h',
-//    members: 7
+projectsRoutes.get('/projects', checkAuth, showProjectsList);
 
-projectsRoutes.use('/projects', checkAuth, function(req, res, next) {
+projectsRoutes.get('/projects/:id', function (req, res) {
+   Project.findById(req.params.id, function (err, result) {
+          res.json(result);
+          return result;
+       }
+   )
+});
+
+projectsRoutes.post('/projects/new',
+    bodyParser.urlencoded({extended: false}),checkAuth, createProject);
+
+
+function createProject(req, res, next) {
+   var title = req.body.projectTitle || null;
+   if (!title || title.trim().length === 0) {
+      return res.json({error: "emptyTitle"});
+   }
+   var newProject = new Project({
+      title: title,
+      _owner: req.session.user_id
+   });
+   newProject.save(function(err, newProject) {
+      if (err) return console.error("Error while saving new project: %s", err);
+      res.json({url: '/projects/' + newProject._id});
+   })
+}
+
+
+/**
+ * Отдаёт страницу со списком проектов, которые принадлежат текущему пользователю
+ * TODO show also these projects where user a member
+ * @param req
+ * @param res
+ * @param next
+ */
+function showProjectsList(req, res, next) {
 
    Project.find({_owner: req.session.user_id}, function(err, result) {
       if (err) {
@@ -25,6 +55,7 @@ projectsRoutes.use('/projects', checkAuth, function(req, res, next) {
       result.forEach(function(obj) {
          tempProjectList.push(
              {
+                _id      : obj._id,
                 title    : obj.title,
                 tasks    : obj.tasks.length,
                 completed: obj.completedTasks,
@@ -34,10 +65,10 @@ projectsRoutes.use('/projects', checkAuth, function(req, res, next) {
              }
          );
       });
-      console.log("___________________________\nResult project list for render: \n___________________________")
+      console.log("___________________________\nResult project list for render: \n___________________________");
       console.log(tempProjectList);
       res.render('projects.jade', {user: req.session.user_id, projects: tempProjectList});
    });
-});
+}
 
 module.exports = projectsRoutes;
