@@ -20,8 +20,7 @@ var schema = new Schema({
         default: Date.now()
     },
     lastMod: {
-        type: Date,
-        default: Date.now()
+        type: Date
     }
 });
 

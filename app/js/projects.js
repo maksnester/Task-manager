@@ -26,8 +26,8 @@ function createNewProject() {
         method: "post",
         url: "/projects/new",
         success: function(res) {
-            if (res.url) {
-                window.location.href = currentUrl + res.url;
+            if (res._id) {
+                window.location.href = currentUrl + res._id;
             } else if (res.error) {
                 $(titleInput).popover('show');
             }

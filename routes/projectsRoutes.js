@@ -31,7 +31,7 @@ function createProject(req, res, next) {
    });
    newProject.save(function(err, newProject) {
       if (err) return console.error("Error while saving new project: %s", err);
-      res.json({url: '/projects/' + newProject._id});
+      res.json({_id: newProject._id});
    })
 }
 
@@ -44,15 +44,15 @@ function createProject(req, res, next) {
  * @param next
  */
 function showProjectsList(req, res, next) {
-
-   Project.find({_owner: req.session.user_id}, function(err, result) {
+   var query = Project.find({_owner: req.session.user_id}).sort({lastMod: -1});
+   query.exec(function (err, result) {
       if (err) {
          console.log("Error when getting list of projects: %s", err);
          return next(err);
       }
       console.log(result);
       var tempProjectList = [];
-      result.forEach(function(obj) {
+      result.forEach(function (obj) {
          tempProjectList.push(
              {
                 _id      : obj._id,
@@ -61,7 +61,7 @@ function showProjectsList(req, res, next) {
                 completed: obj.completedTasks,
                 timeSpent: obj.timeSpent,
                 members  : obj.members.length,
-                lastMod  : obj.lastMod.shortDate()
+                lastMod  : (obj.lastMod) ? obj.lastMod.shortDate() : obj.created.shortDate()
              }
          );
       });
