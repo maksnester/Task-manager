@@ -8,12 +8,15 @@ var Project = require('models/project').Project;
 
 projectsRoutes.get('/projects', checkAuth, showProjectsList);
 
-projectsRoutes.get('/projects/:id', function (req, res) {
+//TODO checkAuth + check rights on current project. If not member or creator - fake 404
+projectsRoutes.get('/projects/:id', checkAuth, function (req, res) {
    Project.findById(req.params.id, function (err, result) {
-          res.json(result);
-          return result;
+          if (err) {
+             console.log("Error while finding project with id=%s. Error: %s", req.param.id, err);
+          }
+          res.render('current-project.jade', {user: req.session.user_id, projectTitle: result.title});
        }
-   )
+   );
 });
 
 projectsRoutes.post('/projects/new',

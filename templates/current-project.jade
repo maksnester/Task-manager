@@ -1,0 +1,23 @@
+doctype html
+html
+    head
+        include components/common-includes.jade
+        //roboto
+        link(href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css')
+        //custom
+        link(rel="stylesheet" href="/styles/current-project.css")
+        script(src="/js/current-project.js")
+        title Project view
+    body
+        include components/navbar.jade
+        main
+            h1 #{projectTitle}
+            .container
+                .row
+                    .col-xs-12
+                        #task-list
+                            include components/task-list.jade
+                        #chart
+                            include components/chart-carousel.jade
+        footer.container-fluid
+            | my footer here

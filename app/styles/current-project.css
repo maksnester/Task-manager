@@ -1,0 +1,27 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+#dummy {
+    border:solid 1px black;
+    height: 400px;
+    background: url("/images/chart-example.png");
+    background-size: cover;
+}
+
+main {
+    padding-top:51px;
+}
+
+#task-list {
+    margin-top: 30px;
+}
+
+#chart {
+    margin-bottom: 50px;
+}
+
+footer {
+    height: 200px;
+    background-color: #d9edf7;
+}
