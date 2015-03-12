@@ -1,48 +1,51 @@
 var mongoose = require('lib/mongoose');
-var lastMod = require('lib/lastMod');
 var Schema = mongoose.Schema;
 
 
-
 var schema = new Schema({
-    title: {
-        type: String,
+    title      : {
+        type    : String,
         required: true
     },
-    author: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
+    author     : {
+        type    : Schema.Types.ObjectId,
+        ref     : 'User',
         required: true
     },
     description: {
         type: String
     },
     //считается время в минутах
-    timeSpent: {
-        type: Number, min: 0, max: Math.pow(2,32) - 1,
+    timeSpent  : {
+        type   : Number, min: 0, max: Math.pow(2, 32) - 1,
         default: 0
     },
     isCompleted: {
-        type: Boolean,
+        type   : Boolean,
         default: false
     },
-    priority: {
-        type: Number, min: 1, max: 5,
+    priority   : {
+        type   : Number, min: 1, max: 5,
         default: 3
     },
-    created: {
-        type: Date,
-        default: Date.now()
+    created    : {
+        type   : Date,
+        default: new Date()
     },
-    lastMod: {
-        type: Date,
-        default: Date.now()
+    lastMod    : {
+        type   : Date,
+        default: new Date()
+    },
+    parent     : {
+        type: Schema.Types.ObjectId,
+        ref : 'Project'
     }
 });
 
+//TODO update parent's lastMod too
 schema.pre('save', function (next) {
     this.lastMod = new Date();
     next();
 });
 
-exports.shema = schema;
+module.exports.Task = mongoose.model('Task', schema);

@@ -30,7 +30,7 @@ html
                             .modal-content
                                 .modal-header
                                     button.close(type="button" data-dismiss="modal" aria-label="Close") &times;
-                                    h4.modal-title#newProjectModalLabel Create a new project
+                                    h4#newProjectModalLabel.modal-title Create a new project
                                 .modal-body
                                     input(type="text" placeholder="Project title")
                                 .modal-footer
@@ -39,6 +39,7 @@ html
 
             //main content
             div.row.list
+                //-projects iteration
                 each project in projects
                     div.project(onclick="openProject(this)" data-ouid='#{project._id}').container-fluid
                         div.row
@@ -53,7 +54,12 @@ html
                                     span.tasksAmount #{project.tasks}
                                     |/
                                     span.completedTasksAmount #{project.completed}
-                                div.col-xs-3.stat time spent: #{project.timeSpent}
+                                div.col-xs-3.stat time spent:&nbsp;
+                                    if project.timeSpent
+                                        #{project.timeSpent}
+                                    else
+                                        |none
+
                                 div.col-xs-3.stat members: #{project.members}
                                 div.col-xs-1.btn.btn-default
                                     i.fa.fa-group &nbsp;Share

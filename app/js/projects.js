@@ -28,7 +28,10 @@ function createNewProject() {
         success: function(res) {
             if (res._id) {
                 window.location.href = currentUrl + res._id;
-            } else if (res.error) {
+            } else console.warn("Response is not contain project _id.")
+        },
+        error: function(jqXHR, textStatus, errorThrown)  {
+            if (jqXHR.responseJSON.error === "emptyTitle") {
                 $(titleInput).popover('show');
             }
         },

@@ -4,17 +4,52 @@
             .panel-title
                 h4 Tasks in progress
     #collapseOpened.panel-collapse.collapse.in
-        ul.list-group
-            li.list-group-item Task1
-            li.list-group-item Task2
-            li.list-group-item Task3
+        if tasks.current
+            ul.list-group
+                li.list-group-item.task-list-header.clearfix
+                    .col-xs-1 Priority
+                    .col-xs-8 Task
+                    .col-xs-2 Time
+                    .col-xs-1 Close
+                //-tasks iteration
+                each task in tasks.current
+                    li.list-group-item.task-current.clearfix
+                        .col-xs-1 #{task.priority}
+                        .col-xs-8 #{task.title}
+                        .col-xs-2
+                            if task.timeSpent
+                                #{task.timeSpent}
+                            else
+                                |none
+                        .col-xs-1.state-change-col
+                            i.btn.fa.fa-check
+        else
+            .no-tasks
+                |No active tasks.
+                .create-task.btn.btn-primary(type="button" data-toggle="modal" data-target="#newTaskModal") Add
 .panel.panel-default.closed-tasks-panel
     .panel-heading
         a.accordion-toggle(data-toggle="collapse" data-target="#collapseClosed" href="#")
             .panel-title
-                h4 Tasks in progress
+                h4 Finished tasks
     #collapseClosed.panel-collapse.collapse.in
-        ul.list-group
-            li.list-group-item Task1
-            li.list-group-item Task2
-            li.list-group-item Task3
+        if tasks.finished
+            ul.list-group
+                li.list-group-item.task-list-header.clearfix
+                    .col-xs-1 Priority
+                    .col-xs-8 Task
+                    .col-xs-2 Time
+                    .col-xs-1 Reopen
+                each task in tasks.finished
+                    li.list-group-item.task-current.clearfix
+                        .col-xs-1 #{task.priority}
+                        .col-xs-8 #{task.title}
+                        .col-xs-2
+                            if task.timeSpent
+                                #{task.timeSpent}
+                            else
+                                | none
+                        .col-xs-1.state-change-col
+                            i.fa.fa-undo.btn
+        else
+            .no-tasks No tasks finished yet.

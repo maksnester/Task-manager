@@ -13,15 +13,55 @@ main {
     padding-top:51px;
 }
 
+.create-task{
+    float: right;
+}
+
 #task-list {
     margin-top: 30px;
 }
 
+.task-list-header {
+    height: 30px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.task-list-header > div:last-child {
+    text-align: center;
+}
+
+.no-tasks {
+    padding: 20px;
+}
+
+textarea {
+    resize: vertical;
+    max-height: 400px;
+}
+
 #chart {
+    margin-top: 30px;
     margin-bottom: 50px;
 }
 
 footer {
     height: 200px;
     background-color: #d9edf7;
+}
+
+.state-change-col{
+    text-align: center;
+}
+
+.state-change-col > .btn{
+    padding: 0;
+}
+
+.fa-check {
+    color: green;
+}
+
+.fa-undo {
+    color: royalblue;
 }
