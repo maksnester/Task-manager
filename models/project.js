@@ -1,7 +1,6 @@
 var mongoose = require('lib/mongoose');
 var Schema = mongoose.Schema;
 var Task = require('models/task').Task;
-var getTimeSpent = require('lib/dateMods').getTimeSpent;
 
 
 var schema = new Schema({
@@ -15,12 +14,7 @@ var schema = new Schema({
         required: true
     },
     members: [{type: Schema.Types.ObjectId, ref: 'User'}],
-    tasks  : [
-        {
-            type: Schema.Types.ObjectId,
-            ref : 'Task'
-        }
-    ],
+    tasks  : [{type: Schema.Types.ObjectId, ref: 'Task'}],
     created: {
         type   : Date,
         default: new Date()

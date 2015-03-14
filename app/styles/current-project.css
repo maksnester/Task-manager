@@ -14,8 +14,38 @@ main {
 }
 
 .create-task{
+    color: black;
     float: right;
+    padding: 0;
+    border-bottom: 1px dashed black;
+    border-radius: 0;
 }
+.create-task > .fa{
+    color: green;
+    transition: transform 0.55s;
+}
+
+.create-task:hover > .fa{
+    transform: rotate(-180deg);
+}
+
+.create-task:hover{
+    color: green;
+    border-bottom-color: green;
+}
+
+.timeSpent-col {
+     text-decoration: underline;
+     cursor: pointer;
+ }
+
+.task-current > .timeSpent-col:hover{
+    color: green;
+}
+.task-finished > .timeSpent-col:hover{
+    color: royalblue;
+}
+
 
 #task-list {
     margin-top: 30px;
@@ -64,4 +94,26 @@ footer {
 
 .fa-undo {
     color: royalblue;
+}
+
+.bs-callout {
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+}
+
+.bs-callout-info {
+    border-left-color: #1b809e;
+}
+
+#blank {
+    width: 100%;
+    height: 0;
+}
+
+.fa-exclamation-triangle {
+    color: rgb(253, 133, 98);
+    padding-right: 5px;
 }

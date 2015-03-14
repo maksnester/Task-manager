@@ -51,12 +51,12 @@ html
                             if project.tasks
                                 div.col-xs-3.col-xs-offset-2.stat
                                     |tasks:&nbsp;
-                                    span.tasksAmount #{project.tasks}
-                                    |/
                                     span.completedTasksAmount #{project.completed}
+                                    |/
+                                    span.tasksAmount #{project.tasks}
                                 div.col-xs-3.stat time spent:&nbsp;
                                     if project.timeSpent
-                                        #{project.timeSpent}
+                                        |#{project.timeSpent}
                                     else
                                         |none
 

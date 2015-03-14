@@ -16,6 +16,34 @@ projectsRoutes.get('/projects', checkAuth, showProjectsList);
 //add new task into :id project
 projectsRoutes.post('/projects/:id/new', parseBody, checkAuth, createTask);
 
+projectsRoutes.put('/projects/:project/:task', parseBody, checkAuth, function(req, res, next){
+    Task.findById(req.params.task, function(err, task) {
+        if (err) {
+            console.log("Erorr occured on task finding: %s. Task id = %s", err, req.params.task);
+            return next(err);
+        }
+
+        if (req.body.title) task.title = req.body.title;
+        if (req.body.description) task.description = req.body.description;
+        if (req.body.description) task.priority = parseInt(req.body.priority, 10);
+        if (req.body.isCompleted) task.isCompleted = req.body.isCompleted;
+
+        if (req.body.timeSpent) task.timeSpent += parseInt(req.body.timeSpent, 10);
+
+        task.save(function(err, task) {
+            if (err) {
+                console.log("Erorr occured on task update: %s. Task id = %s", err, req.params.task);
+                if (err.name === "ValidationError") return res.status(400).json({error: "ValidationError"});
+                return next(err);
+            }
+            console.log("OK. Project id=%s, task id=%s", req.params.project, req.params.task);
+            task._doc.timeSpent = getTimeSpent(task.timeSpent);
+            res.status(200).json(task);
+        })
+    })
+
+});
+
 //TODO checkAuth + check rights on current project. If not member or creator - fake 404
 //go to project
 projectsRoutes.get('/projects/:id', checkAuth, showProjectById);
@@ -53,7 +81,7 @@ function createProject(req, res, next) {
 function showProjectsList(req, res, next) {
     var query = Project
         .find({owner: req.session.user_id})
-        .populate('_tasks')
+        .populate('tasks')
         .sort({lastMod: -1});
     query.exec(function (err, result) {
         if (err) {
@@ -86,7 +114,7 @@ function showProjectsList(req, res, next) {
         });
         console.log("___________________________\nResult project list for render: \n___________________________");
         console.log(tempProjectList);
-        res.render('projects.jade', {user: req.session.user_id, projects: tempProjectList});
+        res.append('Cache-control', 'no-store').render('projects.jade', {user: req.session.user_id, projects: tempProjectList});
     });
 }
 
@@ -111,7 +139,7 @@ function showProjectById(req, res, next) {
                 };
                 // split by two type of tasks and convert timeSpent from minutes to string
                 result.tasks.forEach(function (task) {
-                    task.timeSpent = getTimeSpent(task.timeSpent);
+                    task._doc.timeSpent = getTimeSpent(task.timeSpent);
                     if (task.isCompleted) tasks.finished.push(task);
                     else tasks.current.push(task);
                 });
@@ -124,6 +152,8 @@ function showProjectById(req, res, next) {
                 projectTitle: result.title,
                 tasks       : tasks
             };
+            console.log("For project=%s taks list is:", req.params.id);
+            console.log(renderObjects);
             res.render('current-project.jade', renderObjects);
         }
     );
@@ -156,7 +186,7 @@ function createTask(req, res, next) {
     }
 
     if (priority && priority.trim().length !== 0) {
-        newTask.priority = Number.parseInt(priority);
+        newTask.priority = parseInt(priority, 10);
     }
 
     new Task(newTask).save(function (err, result) {
