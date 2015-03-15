@@ -4,7 +4,7 @@ var titleInput;
 //remove trailing slashes
 var currentUrl = (window.location.href + "/").replace(/\/*$/, "/");
 
-$(document).ready(function() {
+$(document).ready(function () {
     titleInput = $(".modal-body > input")[0];
     $(titleInput).popover({
         html: true,
@@ -12,7 +12,7 @@ $(document).ready(function() {
         placement: 'right',
         trigger: 'manual'
     });
-    titleInput.onclick = function() {
+    titleInput.onclick = function () {
         $(titleInput).popover('hide');
     }
 });
@@ -25,17 +25,17 @@ function createNewProject() {
         dataType: "json",
         method: "post",
         url: "/projects/new",
-        success: function(res) {
+        success: function (res) {
             if (res._id) {
                 window.location.href = currentUrl + res._id;
             } else console.warn("Response is not contain project _id.")
         },
-        error: function(jqXHR, textStatus, errorThrown)  {
+        error: function (jqXHR, textStatus, errorThrown) {
             if (jqXHR.responseJSON.error === "emptyTitle") {
                 $(titleInput).popover('show');
             }
         },
-        complete: function(jqXHR, status) {
+        complete: function (jqXHR, status) {
             console.info("Server response with " + status);
         }
     });

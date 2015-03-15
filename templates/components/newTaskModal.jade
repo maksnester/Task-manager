@@ -1,0 +1,20 @@
+#newTaskModal.modal.fade(tabindex="-1" role="dialog" aria-labelleby="newTaskModalLabel")
+    .modal-dialog
+        .modal-content
+            .modal-header
+                button.close(type="button" data-dismiss="modal" aria-label="Close") &times;
+                h4#newTaskModalLabel.modal-title New task
+            form
+                .modal-body
+                    .form-group
+                        label(for="taskTitle") Task title
+                        input#taskTitle.form-control(type="text" placeholder="Enter the title" required)
+                    .form-group
+                        label(for="taskDescription") Description
+                        textarea#taskDescription.form-control(rows="5" placeholder="Add some description...")
+                    .form-group
+                        label(for="taskPriority") Priority
+                        input#taskPriority.form-control(type="number" min="1" max="5" step="1" value="3" required)
+                .modal-footer
+                    button.btn.btn-default(type="button" data-dismiss="modal") Cancel
+                    button.btn.btn-primary(type="button" onclick="addTask()") Save

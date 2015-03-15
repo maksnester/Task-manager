@@ -34,18 +34,21 @@ main {
     border-bottom-color: green;
 }
 
-.timeSpent-col {
+.editable {
      text-decoration: underline;
      cursor: pointer;
  }
 
-.task-current > .timeSpent-col:hover{
+.task-current > .editable:hover{
     color: green;
 }
-.task-finished > .timeSpent-col:hover{
+.task-finished > .editable:hover{
     color: royalblue;
 }
 
+.btn-danger {
+    float: left;
+}
 
 #task-list {
     margin-top: 30px;

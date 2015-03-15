@@ -64,10 +64,10 @@ app.get('/st', function(req, res) {
 });
 
 //use routes for login, registration and etc.
-var authRoutes = require('./routes/authRoutes');
+var authRoutes = require('routes/authRoutes');
 app.use('/', authRoutes);
 
-var projectsRoutes = require('./routes/projectsRoutes');
+var projectsRoutes = require('routes/projectRoutes');
 app.use('/', projectsRoutes);
 
 //тест обработчика ошибок

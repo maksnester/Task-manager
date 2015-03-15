@@ -8,7 +8,12 @@ var taskTitle,
     newTaskModal,
     timeSpentModal,
     timeSpentInput,
-    timeSpentModalSubmit;
+    timeSpentModalSubmit,
+    editTaskModal,
+    editTaskTitle,
+    editTaskDescription,
+    editTaskPriority,
+    editTaskDeleteBtn;
 
 var noTasks = document.createElement('div');
 noTasks.className = "no-tasks";
@@ -23,17 +28,27 @@ $(document).ready(function () {
     currentTasksContainer = $('#current-tasks');
     finishedTasksContainer = $('#finished-tasks');
     newTaskModal = $('#newTaskModal');
+
     timeSpentModal = $('#timeSpentModal');
     timeSpentInput = $('#timeSpentInput');
     timeSpentModalSubmit = $('#timeSpentModalSubmit');
+    timeSpentModal.submit(addTimeSpent);
 
-    $(taskTitle).popover({
-        html     : true,
-        title    : "Empty title",
-        content  : '<i class="fa fa-exclamation-triangle"></i><b>Error.</b> Title should not be empty.',
+    editTaskModal = $('#editTaskModal');
+    editTaskTitle = $('#editTaskTitle');
+    editTaskDescription = $('#editTaskDescription');
+    editTaskPriority = $('#editTaskPriority');
+    editTaskDeleteBtn = $('#editTaskDeleteBtn');
+
+    var titlePopover = {
+        html: true,
+        title: "Empty title",
+        content: '<i class="fa fa-exclamation-triangle"></i><b>Error.</b> Title should not be empty.',
         placement: 'bottom',
-        trigger  : 'manual'
-    });
+        trigger: 'manual'
+    };
+
+    $(taskTitle).popover(titlePopover);
     taskTitle.onclick = function () {
         $(taskTitle).popover('hide');
     };
@@ -44,26 +59,31 @@ $(document).ready(function () {
     });
 
     timeSpentInput.popover({
-        html     : true,
-        content  : '<i class="fa fa-exclamation-triangle"></i>' +
+        html: true,
+        content: '<i class="fa fa-exclamation-triangle"></i>' +
         '<b>Error.</b> Please check than you not trying to remove more time than already spent.',
         placement: 'bottom',
-        trigger  : 'manual'
+        trigger: 'manual'
     });
 
     $('#blank').popover({
-        html     : true,
-        title    : "Parse error",
-        content  : '<i class="fa fa-exclamation-triangle" style="color: rgb(253, 133, 98)"></i>' +
+        html: true,
+        title: "Parse error",
+        content: '<i class="fa fa-exclamation-triangle" style="color: rgb(253, 133, 98)"></i>' +
         '<b>Error.</b> Please check your syntax.',
         placement: 'bottom',
-        trigger  : 'manual'
+        trigger: 'manual'
     });
 
     timeSpentInput[0].onclick = function () {
         timeSpentInput.popover('hide');
         $('#blank').popover('hide');
     };
+
+    editTaskTitle.popover(titlePopover);
+    editTaskTitle[0].onclick = function() {
+        editTaskTitle.popover('hide');
+    }
 });
 
 function addTask() {
@@ -73,18 +93,18 @@ function addTask() {
     }
 
     $.ajax({
-        async   : true,
-        data    : {
-            taskTitle      : taskTitle.value,
+        async: true,
+        data: {
+            taskTitle: taskTitle.value,
             taskDescription: taskDescription.value,
-            taskPriority   : taskPriority.value
+            taskPriority: taskPriority.value
         },
-        method  : "post",
-        url     : currentUrl + "new",
-        success : function (data, textStatus, jqXHR) {
+        method: "post",
+        url: currentUrl + "new",
+        success: function (data, textStatus, jqXHR) {
             location.reload();
         },
-        error   : function (jqXHR, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, errorThrown) {
             if (typeof jqXHR.responseJSON != "undefined" &&
                 typeof jqXHR.responseJSON.error != "undefined" &&
                 jqXHR.responseJSON.error === "emptyTitle") {
@@ -104,12 +124,12 @@ function setTaskCompleted(element, isCompleted) {
     var destination = (isCompleted) ? finishedTasksContainer : currentTasksContainer;
 
     $.ajax({
-        async  : true,
-        data   : {
+        async: true,
+        data: {
             isCompleted: isCompleted
         },
-        method : "put",
-        url    : currentUrl + id,
+        method: "put",
+        url: currentUrl + id,
         success: function (jqXHR, status) {
             if (status) console.info("Success, status: " + status);
 
@@ -136,7 +156,7 @@ function setTaskCompleted(element, isCompleted) {
                 }
             });
         },
-        error  : function (jqXHR, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, errorThrown) {
             console.error("Server responded with: " + textStatus);
         }
     });
@@ -150,11 +170,9 @@ function showTimeSpentModal(timeSpentCol) {
     task = timeSpentCol.parentNode;
 }
 
-/**
- * This time will be added to current timeSpent for task
- * @param task - dom element with task string
- */
-function addTimeSpent() {
+
+function addTimeSpent(event) {
+    event.preventDefault();
     var timeSpent = getDeltaTime(timeSpentInput[0].value);
     if (!timeSpent) {
         $('#blank').popover('show');
@@ -163,10 +181,10 @@ function addTimeSpent() {
     var id = task.dataset.ouid;
     //update on server
     $.ajax({
-        async  : true,
-        url    : currentUrl + id,
-        method : "put",
-        data   : {
+        async: true,
+        url: currentUrl + id,
+        method: "put",
+        data: {
             timeSpent: timeSpent
         },
         success: function (jqXHR, status) {
@@ -180,7 +198,7 @@ function addTimeSpent() {
             if (status) console.info("Success, status: " + status);
             timeSpentModal.modal('hide');
         },
-        error  : function (jqXHR, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, errorThrown) {
             console.error("Server responded with: " + textStatus);
             if (typeof jqXHR.responseJSON != "undefined"
                 && typeof jqXHR.responseJSON.error != "undefined"
@@ -190,9 +208,83 @@ function addTimeSpent() {
             }
         }
     });
+}
 
-    //new time spent will be gotten from server
-    //update view
+function showTaskEditModal(titleCol) {
+    task = titleCol.parentNode;
+    var id = task.dataset.ouid;
+
+    // fill edit modal
+    editTaskPriority[0].value = task.children[0].innerText;
+    editTaskTitle[0].value = task.children[1].innerText;
+    getFieldById(id, "description").done(function(jqXHR) {
+        editTaskDescription[0].value = jqXHR.description || null;
+    });
+
+    editTaskModal.modal('show');
+}
+
+function editTask() {
+    if (!editTaskTitle[0].value || editTaskTitle[0].value.trim() === "") {
+        editTaskTitle.popover('show');
+        return;
+    }
+
+    var id = task.dataset.ouid;
+    $.ajax({
+        url: currentUrl + id,
+        method: "put",
+        data: {
+            title: editTaskTitle[0].value,
+            description: editTaskDescription[0].value,
+            priority: editTaskPriority[0].value
+        },
+        success: function(jqXHR, status) {
+            console.info("Server respond with: " + status + ". Task " + id + " is updated;");
+            task.children[0].innerText = jqXHR.priority;
+            task.children[1].innerText = jqXHR.title;
+            editTaskModal.modal('hide');
+        },
+        error: function(jqXHR, status) {
+            console.error("Server respond with: " + status);
+
+            if (typeof jqXHR.responseJSON != "undefined" &&
+                typeof jqXHR.responseJSON.error != "undefined" &&
+                jqXHR.responseJSON.error === "emptyTitle") {
+                $(taskTitle).popover('show');
+            }
+        }
+    });
+}
+
+function deleteTask() {
+    if (!confirm("Really delete this task?")) return;
+    var id = task.dataset.ouid;
+    $.ajax({
+        url: currentUrl + id,
+        method: "delete",
+        success: function(jqXHR, status) {
+            console.info("Server respond with: " + status + ". Task " + id + " is deleted;");
+            task.remove();
+            editTaskModal.modal('hide');
+        },
+        error: function(jqXHR, status) {
+            console.error("Server respond with: " + status);
+        }
+    });
+}
+
+function getFieldById(id, field) {
+    return $.ajax({
+        url: currentUrl + id,
+        method: "get",
+        data: {
+            field: field
+        },
+        error: function(jqXHR, status) {
+            console.error("Error while getting " + field + " for task " + id + ". Server respond with: " + status || error);
+        }
+    });
 }
 
 /**

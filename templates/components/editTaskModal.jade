@@ -1,0 +1,27 @@
+#editTaskModal.modal.fade(tabindex="-1" role="dialog" aria-labelleby="editTaskModalLabel")
+   .modal-dialog
+      .modal-content
+         .modal-header
+            button.close(type="button" data-dismiss="modal" aria-label="Close") &times;
+            h4#editTaskModalLabel.modal-title Edit task
+         form
+            .modal-body
+               .form-group
+                  label(for="taskTitle") Task title
+                  input#editTaskTitle.form-control(type="text" placeholder="Enter the title")
+               .form-group
+                  label(for="taskDescription") Description
+                  textarea#editTaskDescription.form-control(rows="5" placeholder="Add some description...")
+               .form-group
+                  label(for="taskPriority") Priority
+                  input#editTaskPriority.form-control(type="number" min="1" max="5" step="1" value="3")
+               .form-group
+                  label(for="taskComments") Comments
+                  #taskComments
+                     |No comments
+            .modal-footer
+               button.btn.btn-danger#editTaskDeleteBtn(type="button" onclick="deleteTask()")
+                  .fa.fa-trash-o
+                  |&nbsp;Delete
+               button.btn.btn-default(type="button" data-dismiss="modal") Cancel
+               button.btn.btn-primary(type="button" onclick="editTask()") Save

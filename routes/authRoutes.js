@@ -64,22 +64,20 @@ function createNewUser(req, res, next) {
  * @param next
  */
 function login(req, res, next) {
-    var email = req.body.email;
+    var email = req.body.email.toLowerCase();
     var password = req.body.password;
     if (email && password) {
-        User.findOne({email: email}, function(err, user) {
+        User.findOne({email: email}, function (err, user) {
             if (err) {
                 console.error("Error while email validation: " + err);
                 return next(err);
             }
-            if (user) { //нашли пользователя проверим пароль
-                if (user.checkPassword(password)) {
-                    //всё ок, записать в сессию user_id и редирект в мои проекты
-                    req.session.user_id = user._id;
-                    res.redirect('/projects');
-                } else {
-                    res.render('signin.jade', {authError: true});
-                }
+            if (user && user.checkPassword(password)) { //нашли пользователя проверим пароль
+                //всё ок, записать в сессию user_id и редирект в мои проекты
+                req.session.user_id = user._id;
+                res.redirect('/projects');
+            } else {
+                res.render('signin.jade', {authError: true});
             }
         });
     }

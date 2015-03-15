@@ -17,9 +17,9 @@
                     //-tasks iteration
                     each task in tasks.current
                         li.list-group-item.task-current.clearfix(data-ouid='#{task._id}')
-                            .col-xs-1 #{task.priority}
-                            .col-xs-8 #{task.title}
-                            .col-xs-2.timeSpent-col(onclick="showTimeSpentModal(this)")
+                            .col-xs-1.priority-col #{task.priority}
+                            .col-xs-8.editable.taskTitle-col(onclick="showTaskEditModal(this)") #{task.title}
+                            .col-xs-2.editable.timeSpent-col(onclick="showTimeSpentModal(this)")
                                 if task.timeSpent
                                     |#{task.timeSpent}
                                 else
@@ -43,9 +43,9 @@
             if tasks.finished
                 each task in tasks.finished
                     li.list-group-item.task-finished.clearfix(data-ouid='#{task._id}')
-                        .col-xs-1 #{task.priority}
-                        .col-xs-8 #{task.title}
-                        .col-xs-2.timeSpent-col(onclick="showTimeSpentModal(this)")
+                        .col-xs-1.priority-col #{task.priority}
+                        .col-xs-8.editable.taskTitle-col(onclick="showTaskEditModal(this)") #{task.title}
+                        .col-xs-2.editable.timeSpent-col(onclick="showTimeSpentModal(this)")
                             if task.timeSpent
                                 |#{task.timeSpent}
                             else
