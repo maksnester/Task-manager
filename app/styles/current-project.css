@@ -64,6 +64,14 @@ main {
     text-align: center;
 }
 
+.task-list-header > div {
+    cursor: pointer;
+}
+
+.task-list-header > div:hover {
+    text-decoration: underline;
+}
+
 .no-tasks {
     padding: 20px;
 }

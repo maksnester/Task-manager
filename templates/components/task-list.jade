@@ -9,9 +9,9 @@
     #collapseOpened.panel-collapse.collapse.in
         ul.list-group#current-tasks
             li.list-group-item.task-list-header.clearfix
-                .col-xs-1 Priority
-                .col-xs-8 Task
-                .col-xs-2 Time
+                .col-xs-1.priority-col(onclick='sortBy(".priority-col","#current-tasks")') Priority
+                .col-xs-8.taskTitle-col(onclick='sortBy(".taskTitle-col","#current-tasks")') Task
+                .col-xs-2.timeSpent-col(onclick='sortBy(".timeSpent-col","#current-tasks")') Time
                 .col-xs-1 Close
             if tasks.current
                     //-tasks iteration
@@ -36,9 +36,9 @@
     #collapseClosed.panel-collapse.collapse.in
         ul.list-group#finished-tasks
             li.list-group-item.task-list-header.clearfix
-                .col-xs-1 Priority
-                .col-xs-8 Task
-                .col-xs-2 Time
+                .col-xs-1.priority-col(onclick='sortBy(".priority-col","#finished-tasks")') Priority
+                .col-xs-8.taskTitle-col(onclick='sortBy(".taskTitle-col","#finished-tasks")') Task
+                .col-xs-2.timeSpent-col(onclick='sortBy(".timeSpent-col","#finished-tasks")') Time
                 .col-xs-1 Reopen
             if tasks.finished
                 each task in tasks.finished

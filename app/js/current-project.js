@@ -322,3 +322,65 @@ function getDeltaTime(timeSpent) {
     if (timeSpent[0] === "-") result *= (-1);
     return result;
 }
+
+var prevSort;
+var order = 1; // 1 is primary order
+/**
+ * Used as onclick parameter in template
+ * @param field - column selector like ".taskTitle-col"
+ * @param tasks - one of this selectors "#current-tasks" or "#finished-tasks"
+ */
+function sortBy(field, tasks) {
+    order = prevSort === field ? (-1)*order : 1;
+    prevSort = field;
+
+    var sortByString = function (a, b) {
+        //if (!(isNaN(a.innerText) || isNaN(b.innerText))) return sortByNumber(a,b);
+        return order * a.innerText.toLowerCase().localeCompare(b.innerText.toLowerCase());
+    };
+
+    var sortByNumber = function (a, b) {
+        if (isNaN(a.innerText) || isNaN(b.innerText)) return sortByString(a,b);
+        if (a.innerText === b.innerText) return 0;
+        return order * (parseInt(a.innerText, 10) > parseInt(b.innerText, 10) ? 1 : -1);
+    };
+
+    var sortByTimeSpent = function (a, b) {
+        if (a.innerText === 'none' && b.innerText === 'none') return 0;
+        else if (a.innerText === 'none') return -1;
+        else if (b.innerText === 'none') return 1;
+
+        var ta = getDeltaTime(a.innerText), tb = getDeltaTime(b.innerText);
+        if (ta === tb) return 0;
+        return order * ((ta > tb) ? 1 : -1);
+    };
+
+    var sortFunction;
+    switch(field) {
+        case ".taskTitle-col" : sortFunction = sortByString; break;
+        case ".priority-col" : sortFunction = sortByNumber; break;
+        case ".timeSpent-col" : sortFunction = sortByTimeSpent; break;
+    }
+
+    var list = $(tasks);
+
+    var headers = list.find(".task-list-header");
+
+    var array = list.find("> li").find("> " + field).get();
+    array.sort(sortFunction);
+    for (var i = 0; i < array.length; i++) {
+        list.append(array[i].parentNode);
+    }
+
+    list.prepend(headers[0]);
+
+    var orderClass = (order === 1) ? 'desc' : 'asc';
+    var sortIcon = '<i class="sort fa fa-sort-' + orderClass + '"></i>';
+
+    var sort = headers.find(field).find('.sort');
+    if (sort.length === 0) {
+        if (headers.find('.sort').length > 0) headers.find('.sort').remove();
+        headers.find(field).append(sortIcon);
+    }
+    else sort[0].className = sort[0].className.replace(/fa-sort-.*$/, "fa-sort-" + orderClass);
+}
