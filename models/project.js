@@ -4,19 +4,24 @@ var Task = require('models/task').Task;
 
 
 var schema = new Schema({
-    title  : {
-        type    : String,
+    title: {
+        type: String,
         required: true
     },
-    owner : {
-        type    : Schema.Types.ObjectId,
-        ref     : 'User',
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
-    members: [{type: Schema.Types.ObjectId, ref: 'User'}],
-    tasks  : [{type: Schema.Types.ObjectId, ref: 'Task'}],
+    members: [
+        {
+            user: {type: Schema.Types.ObjectId, ref: 'User'},
+            role: {type: String, default: 'editor'}
+        }
+    ],
+    tasks: [{type: Schema.Types.ObjectId, ref: 'Task'}],
     created: {
-        type   : Date,
+        type: Date,
         default: new Date()
     },
     lastMod: {
