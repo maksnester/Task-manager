@@ -128,3 +128,29 @@ footer {
     color: rgb(253, 133, 98);
     padding-right: 5px;
 }
+
+li.list-group-item.row {
+    margin: 0;
+}
+
+@media only screen and (max-width : 992px) {
+    .priority-col {
+        padding-left: 0;
+    }
+}
+
+@media only screen and (max-width : 768px) {
+    .task-list-header {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .state-change-col {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+@media only screen and (max-width : 768px) {
+
+}

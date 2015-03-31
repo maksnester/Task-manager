@@ -8,15 +8,15 @@
                     |&nbsp;New Task
     #collapseOpened.panel-collapse.collapse.in
         ul.list-group#current-tasks
-            li.list-group-item.task-list-header.clearfix
+            li.list-group-item.task-list-header.clearfix.row
                 .col-xs-1.priority-col(onclick='sortBy(".priority-col","#current-tasks")') Priority
                 .col-xs-8.taskTitle-col(onclick='sortBy(".taskTitle-col","#current-tasks")') Task
                 .col-xs-2.timeSpent-col(onclick='sortBy(".timeSpent-col","#current-tasks")') Time
-                .col-xs-1 Close
+                .col-xs-1.state-change-col Close
             if tasks.current
                     //-tasks iteration
                     each task in tasks.current
-                        li.list-group-item.task-current.clearfix(data-ouid='#{task._id}')
+                        li.list-group-item.task-current.clearfix.row(data-ouid='#{task._id}')
                             .col-xs-1.priority-col #{task.priority}
                             .col-xs-8.editable.taskTitle-col(onclick="showTaskEditModal(this)") #{task.title}
                             .col-xs-2.editable.timeSpent-col(onclick="showTimeSpentModal(this)")
@@ -35,14 +35,14 @@
                 span Finished tasks
     #collapseClosed.panel-collapse.collapse.in
         ul.list-group#finished-tasks
-            li.list-group-item.task-list-header.clearfix
+            li.list-group-item.task-list-header.clearfix.row
                 .col-xs-1.priority-col(onclick='sortBy(".priority-col","#finished-tasks")') Priority
                 .col-xs-8.taskTitle-col(onclick='sortBy(".taskTitle-col","#finished-tasks")') Task
                 .col-xs-2.timeSpent-col(onclick='sortBy(".timeSpent-col","#finished-tasks")') Time
-                .col-xs-1 Reopen
+                .col-xs-1.state-change-col Reopen
             if tasks.finished
                 each task in tasks.finished
-                    li.list-group-item.task-finished.clearfix(data-ouid='#{task._id}')
+                    li.list-group-item.task-finished.clearfix.row(data-ouid='#{task._id}')
                         .col-xs-1.priority-col #{task.priority}
                         .col-xs-8.editable.taskTitle-col(onclick="showTaskEditModal(this)") #{task.title}
                         .col-xs-2.editable.timeSpent-col(onclick="showTimeSpentModal(this)")

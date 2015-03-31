@@ -40,28 +40,31 @@ html
             //main content
             div.row.list
                 //-projects iteration
-                each project in projects
-                    div.project(onclick="openProject(this)" data-ouid='#{project._id}').container-fluid
-                        div.row
-                            .col-xs-2.last-modified #{project.lastMod}
-                            .col-xs-10.project-title #{project.title}
-                        //- TODO: переверстать это. Что за контейнер в строке втф...
-                        div.description.container-fluid
-                            div.row.info
-                            if project.tasks
-                                div.col-xs-3.col-xs-offset-2.stat
-                                    |tasks:&nbsp;
-                                    span.completedTasksAmount #{project.completed}
-                                    |/
-                                    span.tasksAmount #{project.tasks}
-                                div.col-xs-3.stat time spent:&nbsp;
-                                    if project.timeSpent
-                                        |#{project.timeSpent}
-                                    else
-                                        |none
+                if projects.length
+                    each project in projects
+                        div.project(onclick="openProject(this)" data-ouid='#{project._id}').container-fluid
+                            div.row
+                                .col-xs-2.last-modified #{project.lastMod}
+                                .col-xs-10.project-title #{project.title}
+                            //- TODO: переверстать это. Что за контейнер в строке втф...
+                            div.description.container-fluid
+                                div.row.info
+                                    if project.tasks
+                                        div.col-xs-3.col-xs-offset-2.stat
+                                            |tasks:&nbsp;
+                                            span.completedTasksAmount #{project.completed}
+                                            |/
+                                            span.tasksAmount #{project.tasks}
+                                        div.col-xs-3.stat time spent:&nbsp;
+                                            if project.timeSpent
+                                                |#{project.timeSpent}
+                                            else
+                                                |none
 
-                                div.col-xs-3.stat members: #{project.members}
-                                div.col-xs-1.btn.btn-default
-                                    i.fa.fa-group &nbsp;Share
-                            else
-                                .col-xs-offset-2.col-xs-3 Empty project without tasks
+                                        div.col-xs-3.stat members: #{project.members}
+                                        div.col-xs-1.btn.btn-default
+                                            i.fa.fa-group &nbsp;Share
+                                    else
+                                        .col-xs-offset-2.col-xs-3 Empty project without tasks
+                else
+                    #no-projects.col-xs-10.col-xs-offset-2 No projects yet.
