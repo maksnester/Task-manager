@@ -16,6 +16,10 @@ var schema = new Schema({
         type: String,
         required: true
     },
+    photoUrl: {
+        type: String,
+        default: "images/default-ava.jpg"
+    },
     hashedPassword: {
         type: String,
         required: true

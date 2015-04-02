@@ -67,6 +67,7 @@ body {
 
 .info > .btn:hover {
     background-color: transparent;
+    color: rgb(0, 128, 0);
 }
 
 #new-project {
@@ -97,4 +98,49 @@ body {
 
 .modal-dialog {
     margin-top: 90px;
+}
+
+/*members modal*/
+#membersModal .btn-block {
+    margin-top: 20px;
+}
+
+#membersContainer {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.ava-field {
+    height: 75px;
+    width: 75px;
+}
+
+.ava-field > img {
+    height: 100%;
+    width: 100%;
+}
+
+.member {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 7px 5px -8px rgba(0,0,0,0.5);
+}
+
+.member .close {
+    visibility: hidden;
+    margin-top: -10px;
+    margin-right: -10px;
+}
+.member:hover .close {
+    visibility: visible;
+}
+.role-field {
+    cursor: pointer;
+}
+.role-field:hover {
+    text-decoration: underline;
+}
+
+#newMember {
+    display: none;
 }

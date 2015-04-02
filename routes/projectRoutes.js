@@ -7,6 +7,8 @@ var checkAuth = require('routes/authRoutes').checkAuth;
 
 var Project = require('models/project').Project;
 var Task = require('models/task').Task;
+var User = require('models/user').User;
+
 
 var bodyParser = require('body-parser');
 var parseBody = bodyParser.urlencoded({extended: false});
@@ -14,16 +16,57 @@ var parseBody = bodyParser.urlencoded({extended: false});
 var getTimeSpent = require('lib/dateMods').getTimeSpent;
 
 
-//TODO checkAuth + check rights. If not member or creator - fake 404
+//TODO checkAuth + check rights. If not member fake 404
 
 projectsRoutes.use('/', taskRoutes);
 
 projectsRoutes.get('/projects', checkAuth, showProjectsList);
+projectsRoutes.get('/projects/:id', checkAuth, showProjectById);
 
 projectsRoutes.post('/projects/new', parseBody, checkAuth, createProject);
 
-projectsRoutes.get('/projects/:id', checkAuth, showProjectById);
+projectsRoutes.put('/projects/:id', parseBody, checkAuth, updateProject);
 
+function updateProject(req, res, next) {
+    //new member's email
+    if (req.body.email) {
+        addMember(req, res, next);
+    } else {
+        //temporary
+        res.sendStatus(400);
+    }
+}
+
+function addMember(req, res, next) {
+    var email = req.body.email.toLowerCase();
+    var role = req.body.role.toLowerCase();
+    var query = Project
+        .findOne({_id: req.params.id})
+        .populate('members.user')
+        .sort({"members.name": 1});
+    query.exec(function (err, project) {
+        if (err) return next(err);
+        if (!project) res.status(404).json({error: "Project not found"});
+
+        var i = project.members.length;
+        while (i--) {
+            if (project.members[i].user.email === email) {
+                return res.status(400).json({error: "User is member already"});
+            }
+        }
+
+        User.findOne({email: email}, function(err, user) {
+            if (err) return next(err);
+            if (!user) return res.status(404).json({error: "User not found"});
+
+            project.members.push({user: user._id, role: role});
+            project.save(function(err) {
+                if (err) return next(err);
+                else res.sendStatus(200);
+            });
+        });
+    });
+}
 
 function createProject(req, res, next) {
     var title = req.body.projectTitle || null;
@@ -32,7 +75,8 @@ function createProject(req, res, next) {
     }
     var newProject = new Project({
         title: title,
-        owner: req.session.user_id
+        owner: req.session.user_id,
+        members: [{user: req.session.user_id, role: "owner"}]
     });
     newProject.save(function (err, newProject) {
         if (err) {

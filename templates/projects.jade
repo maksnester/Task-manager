@@ -42,11 +42,10 @@ html
                 //-projects iteration
                 if projects.length
                     each project in projects
-                        div.project(onclick="openProject(this)" data-ouid='#{project._id}').container-fluid
+                        div.project(data-ouid='#{project._id}').container-fluid
                             div.row
                                 .col-xs-2.last-modified #{project.lastMod}
                                 .col-xs-10.project-title #{project.title}
-                            //- TODO: переверстать это. Что за контейнер в строке втф...
                             div.description.container-fluid
                                 div.row.info
                                     if project.tasks
@@ -66,5 +65,127 @@ html
                                             i.fa.fa-group &nbsp;Share
                                     else
                                         .col-xs-offset-2.col-xs-3 Empty project without tasks
+                    #membersModal.modal.fade(tabindex="-1" role="dialog" aria-labelleby="membersModalLabel")
+                        .modal-dialog
+                            .modal-content
+                                .modal-header
+                                    button.close(type="button" data-dismiss="modal" aria-label="Close") &times;
+                                    h4#membersModalLabel.modal-title Members of the project
+                                .modal-body
+                                    .row#membersContainer
+                                        .member.col-xs-12
+                                            .col-xs-3
+                                                .ava-field
+                                                    img(src="images/default-ava.jpg")
+                                            .col-xs-9
+                                                button.close(type="button" aria-label="Remove member") &times;
+                                                .name-field Vasya Pupkin
+                                                .email-field vasyatrahenbahen@gmail.com
+                                                .role-field executor
+                                                .time-field 4d 7h 15m
+
+                                        .member.col-xs-12
+                                            .col-xs-3
+                                                .ava-field
+                                                    img(src="images/default-ava.jpg")
+                                            .col-xs-9
+                                                button.close(type="button" aria-label="Remove member") &times;
+                                                .name-field Kolya Petkin
+                                                .email-field abrahadabra@gmail.com
+                                                .role-field executor
+                                                .time-field 1w 3d 4h 25m
+
+                                        .member.col-xs-12
+                                            .col-xs-3
+                                                .ava-field
+                                                    img(src="images/default-ava.jpg")
+                                            .col-xs-9
+                                                button.close(type="button" aria-label="Remove member") &times;
+                                                .name-field Ivan Ostapov
+                                                .email-field perlrulit@mail.ru
+                                                .role-field editor
+                                                .time-field 2w 4d
+                                        .member.col-xs-12
+                                            .col-xs-3
+                                                .ava-field
+                                                    img(src="images/default-ava.jpg")
+                                            .col-xs-9
+                                                button.close(type="button" aria-label="Remove member") &times;
+                                                .name-field Vasya Pupkin
+                                                .email-field vasyatrahenbahen@gmail.com
+                                                .role-field editor
+                                                .time-field 4d 7h 15m
+
+                                        .member.col-xs-12
+                                            .col-xs-3
+                                                .ava-field
+                                                    img(src="images/default-ava.jpg")
+                                            .col-xs-9
+                                                button.close(type="button" aria-label="Remove member") &times;
+                                                .name-field Kolya Petkin
+                                                .email-field abrahadabra@gmail.com
+                                                .role-field executor
+                                                .time-field 1w 3d 4h 25m
+
+                                        .member.col-xs-12
+                                            .col-xs-3
+                                                .ava-field
+                                                    img(src="images/default-ava.jpg")
+                                            .col-xs-9
+                                                button.close(type="button" aria-label="Remove member") &times;
+                                                .name-field Ivan Ostapov
+                                                .email-field perlrulit@mail.ru
+                                                .role-field editor
+                                                .time-field 2w 4d
+                                        .member.col-xs-12
+                                            .col-xs-3
+                                                .ava-field
+                                                    img(src="images/default-ava.jpg")
+                                            .col-xs-9
+                                                button.close(type="button" aria-label="Remove member") &times;
+                                                .name-field Vasya Pupkin
+                                                .email-field vasyatrahenbahen@gmail.com
+                                                .role-field editor
+                                                .time-field 4d 7h 15m
+
+                                        .member.col-xs-12
+                                            .col-xs-3
+                                                .ava-field
+                                                    img(src="images/default-ava.jpg")
+                                            .col-xs-9
+                                                button.close(type="button" aria-label="Remove member") &times;
+                                                .name-field Kolya Petkin
+                                                .email-field abrahadabra@gmail.com
+                                                .role-field editor
+                                                .time-field 1w 3d 4h 25m
+
+                                        .member.col-xs-12
+                                            .col-xs-3
+                                                .ava-field
+                                                    img(src="images/default-ava.jpg")
+                                            .col-xs-9
+                                                button.close(type="button" aria-label="Remove member") &times;
+                                                .name-field Ivan Ostapov
+                                                .email-field perlrulit@mail.ru
+                                                .role-field editor
+                                                .time-field 2w 4d
+                                        .member#newMember.col-xs-12
+                                            form(onsubmit="return saveMember()")
+                                                label.sr-only(for="email") Email
+                                                .form-group
+                                                    .input-group
+                                                        input.email.form-control(name="email" type="email" placeholder="Email address" required)
+                                                        select.role.form-control(name="role" required)
+                                                            option(value="editor") Editor
+                                                            option(value="executor") Executor
+                                                            option(value="read-only") Read-only
+                                                button.btn.btn-primary.btn-save-member(type="submit") Save
+
+                                    .btn.btn-primary.btn-block(onclick="showNewMemberForm()") Add member
+                                .modal-footer
+                                    p Enable read-only access by link:
+                                    input#accessLink(type="text" value="very complicated link")
+                                    #enableAccess.btn.btn-danger Disable
+                                    #newLink.btn.btn-default New link
                 else
                     #no-projects.col-xs-10.col-xs-offset-2 No projects yet.

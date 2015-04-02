@@ -83,7 +83,7 @@ $(document).ready(function () {
     editTaskTitle.popover(titlePopover);
     editTaskTitle[0].onclick = function() {
         editTaskTitle.popover('hide');
-    }
+    };
 });
 
 function addTask() {
@@ -335,7 +335,6 @@ function sortBy(field, tasks) {
     prevSort = field;
 
     var sortByString = function (a, b) {
-        //if (!(isNaN(a.innerText) || isNaN(b.innerText))) return sortByNumber(a,b);
         return order * a.innerText.toLowerCase().localeCompare(b.innerText.toLowerCase());
     };
 
