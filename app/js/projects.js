@@ -2,7 +2,7 @@
 
 var titleInput;
 var membersModal;
-var membersContainer;
+var membersContainer = {};
 var newMember;
 
 //remove trailing slashes
@@ -22,7 +22,8 @@ $(document).ready(function () {
 
     membersModal = $("#membersModal");
     $('.project').on("click", function (event) {
-        if (event.target.classList && event.target.classList.contains("fa-group")
+        // if target is 'share-button' or 'members' field
+        if (event.target.classList && (event.target.classList.contains("fa-group") || event.target.classList.contains("members"))
             || event.target.firstChild.classList && event.target.firstChild.classList.contains("fa-group")) {
             showMembersModal(this.dataset.ouid);
         } else {
@@ -31,7 +32,27 @@ $(document).ready(function () {
     });
 
     newMember = $('#newMember');
-    membersContainer = $('#membersContainer');
+    membersContainer.view = $('#membersContainer');
+    membersContainer.addMember = function (memberData) {
+        // draw it!
+        // template like below:
+        //      .member.col-xs-12
+        //          .col-xs-3
+        //            .ava-field
+        //                img(src="images/default-ava.jpg")
+        //          .col-xs-9
+        //            button.close(type="button" aria-label="Remove member") &times;
+        //            .name-field Ivan Ostapov
+        //            .email-field perlrulit@mail.ru
+        //            .role-field editor
+        //            .time-field 2w 4d
+    };
+
+    $('form', newMember).on('submit', function (event) {
+        event.preventDefault();
+        saveMember();
+        return false;
+    });
 });
 
 function createNewProject() {
@@ -76,7 +97,7 @@ function getAllMembers(projectId) {
 
 function showNewMemberForm() {
     newMember.show();
-    membersContainer[0].scrollTop = membersContainer[0].scrollHeight;
+    membersContainer.view[0].scrollTop = membersContainer.view[0].scrollHeight;
 }
 
 function saveMember() {
@@ -90,16 +111,18 @@ function saveMember() {
             email: email,
             role: role
         },
-        success: function(jqXHR) {
+        success: function(response) {
             console.info("Member added!");
+            //as response needs avatar, name, email, timeSpent for project
+            //if response contains error show error (user not found or already in members)
+            membersContainer.addMember(response);
+            // TODO update members count for current project
+            membersModal.modal('hide');
         },
         error: function(jqXHR, status) {
-            console.error("Save member failed. Server responded with: " + status + "\n" + jqXHR);
+            console.error("Save member failed. Status: %o. Server responded with: %o", status, jqXHR);
         }
     });
-    //as response needs avatar, name, email, timeSpent for project
-    //if response contains error show error (user not found or already in members)
-    return false;
 }
 
 function showMember() {

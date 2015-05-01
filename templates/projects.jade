@@ -60,7 +60,7 @@ html
                                             else
                                                 |none
 
-                                        div.col-xs-3.stat members: #{project.members}
+                                        div.col-xs-3.stat.members members: #{project.members}
                                         div.col-xs-1.btn.btn-default
                                             i.fa.fa-group &nbsp;Share
                                     else
@@ -170,7 +170,7 @@ html
                                                 .role-field editor
                                                 .time-field 2w 4d
                                         .member#newMember.col-xs-12
-                                            form(onsubmit="return saveMember()")
+                                            form
                                                 label.sr-only(for="email") Email
                                                 .form-group
                                                     .input-group
