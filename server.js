@@ -78,7 +78,8 @@ app.get('/forbidden', function(req, res, next) {
 app.use(express.static(__dirname + '/app'));
 
 app.get('/', function(req, res) {
-    res.render('main.jade', {user: req.session.user_id});
+    //res.render('main.jade', {user: req.session.user_id});
+    res.redirect('/projects');
 });
 
 

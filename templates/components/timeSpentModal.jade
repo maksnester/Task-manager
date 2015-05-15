@@ -9,16 +9,20 @@
                .form-group
                   .bs-callout.bs-callout-info
                      h4 Syntax example
-                     p For track your time spent use the following syntax:&nbsp;
-                        |"1w 3d 2h 5m" or just one of the components like&nbsp;
+                     p To track your time use the following syntax&nbsp;
+                        span.code "1w 3d 2h 5m"
+                        |&nbsp;or just one of these components like&nbsp;
                         span.code "5h"
-                     p You also use the minus sign to fix incorrect tracked earlier time e.g.&nbsp;
+                     p You can also use the minus sign to fix incorrectly tracked earlier time, e.g.&nbsp;
                         span.code "-1h"
                      p
                         b NB!
-                        |&nbsp;1d equals to 8h
+                        |&nbsp;
+                        span.code "1d"
+                        |&nbsp;equals to&nbsp;
+                        span.code "8h"
                   label(for="timeSpentInput") Time spent&nbsp;
-                  input#timeSpentInput.form-control(type="text" placeholder='e.g. "5h 30m"')
+                  input#timeSpentInput.form-control(type="text" placeholder='Example: 2h 30m')
                   #blank
             .modal-footer
                button.btn.btn-default(type="button" data-dismiss="modal") Cancel
