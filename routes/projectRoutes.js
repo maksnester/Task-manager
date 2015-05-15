@@ -4,6 +4,7 @@ var express = require('express');
 var projectsRoutes = express.Router();
 var taskRoutes = require('routes/taskRoutes');
 var checkAuth = require('routes/authRoutes').checkAuth;
+var checkRights = require('routes/permissions').checkRights;
 
 var Project = require('models/project').Project;
 var Task = require('models/task').Task;
@@ -18,32 +19,75 @@ var getTimeSpent = require('lib/dateMods').getTimeSpent;
 
 //TODO checkAuth + check rights. If not member fake 404
 
-projectsRoutes.use('/', taskRoutes);
-
 projectsRoutes.get('/projects', checkAuth, showProjectsList);
+projectsRoutes.get('/projects/:id/members', checkAuth, getMembers);
 projectsRoutes.get('/projects/:id', checkAuth, showProjectById);
 
 projectsRoutes.post('/projects/new', parseBody, checkAuth, createProject);
 
-projectsRoutes.put('/projects/:id', parseBody, checkAuth, updateProject);
+projectsRoutes.put('/projects/:id/members/new', parseBody, checkAuth, addMember);
 
-function updateProject(req, res, next) {
-    //new member's email
-    if (req.body.email) {
-        addMember(req, res, next);
-    } else {
-        //temporary
-        res.sendStatus(400);
-    }
+projectsRoutes.delete('/projects/:id/members/:email', checkAuth, checkRights, removeMember);
+
+projectsRoutes.use('/', taskRoutes);
+
+function removeMember(req, res, next) {
+    var email = (req.params.email || "").toLowerCase();
+    var projectId = req.params.id;
+
+    var query = Project
+        .findById(projectId)
+        .populate({path: "members.user", select: "email"});
+
+    query.exec(function (err, project) {
+        if (err) return next(err);
+        if (!project) res.status(404).json({error: "Project not found"});
+
+        // find user among the members
+        var memberId,
+            len = project.members.length,
+            i = 0;
+        for (; i < len; i++) {
+            if (project.members[i].user.email === email) {
+                memberId = project.members[i]._id;
+                break;
+            }
+        }
+
+        if (!memberId) return res.status(404).json({error: "User with this email was not found among the project members."});
+        project.members.id(memberId).remove();
+        project.save(function(err) {
+            if (err) return next(err);
+            res.sendStatus(200);
+        });
+    });
+
+
+}
+
+function getMembers(req, res, next) {
+    var projectId = req.params.id;
+    var query = Project
+        .findOne({_id: projectId})
+        .populate({path: 'members.user', select: "avatar name email"});
+    query.exec(function (err, project) {
+        if (err) return next(err);
+        if (!project) res.status(404).json({error: "Project not found"});
+        res.send(project.members);
+    });
 }
 
 function addMember(req, res, next) {
-    var email = req.body.email.toLowerCase();
-    var role = req.body.role.toLowerCase();
+    var email = (req.body.email || "").toLowerCase();
+    var role = (req.body.role || "").toLowerCase();
+
+    if (!email || !role) {
+        return res.status(400).json({error: "Email and role required"});
+    }
+
     var query = Project
         .findOne({_id: req.params.id})
-        .populate('members.user')
-        .sort({"members.name": 1});
+        .populate('members.user');
     query.exec(function (err, project) {
         if (err) return next(err);
         if (!project) res.status(404).json({error: "Project not found"});
@@ -55,14 +99,21 @@ function addMember(req, res, next) {
             }
         }
 
-        User.findOne({email: email}, function(err, user) {
+        User.findOne({email: email}, {"avatar": 1, "name": 1, "email": 1}, function (err, user) {
             if (err) return next(err);
             if (!user) return res.status(404).json({error: "User not found"});
+            if (project.owner === user._id) return res.status(400).json({error: "User is project owner"});
 
             project.members.push({user: user._id, role: role});
-            project.save(function(err) {
+            project.save(function (err) {
                 if (err) return next(err);
-                else res.sendStatus(200);
+                else {
+                    var responseObject = {
+                        user: user,
+                        role: role
+                    };
+                    res.send(responseObject);
+                }
             });
         });
     });

@@ -7,7 +7,8 @@ html
 
         //custom
         link(rel="stylesheet" href="/styles/projects.css")
-        script(src="/js/projects.js")
+        script(src="/js/projects/projects.js")
+        script(src="/js/projects/members.js")
         title List of projects
 
     body
@@ -73,102 +74,9 @@ html
                                     h4#membersModalLabel.modal-title Members of the project
                                 .modal-body
                                     .row#membersContainer
-                                        .member.col-xs-12
-                                            .col-xs-3
-                                                .ava-field
-                                                    img(src="images/default-ava.jpg")
-                                            .col-xs-9
-                                                button.close(type="button" aria-label="Remove member") &times;
-                                                .name-field Vasya Pupkin
-                                                .email-field vasyatrahenbahen@gmail.com
-                                                .role-field executor
-                                                .time-field 4d 7h 15m
-
-                                        .member.col-xs-12
-                                            .col-xs-3
-                                                .ava-field
-                                                    img(src="images/default-ava.jpg")
-                                            .col-xs-9
-                                                button.close(type="button" aria-label="Remove member") &times;
-                                                .name-field Kolya Petkin
-                                                .email-field abrahadabra@gmail.com
-                                                .role-field executor
-                                                .time-field 1w 3d 4h 25m
-
-                                        .member.col-xs-12
-                                            .col-xs-3
-                                                .ava-field
-                                                    img(src="images/default-ava.jpg")
-                                            .col-xs-9
-                                                button.close(type="button" aria-label="Remove member") &times;
-                                                .name-field Ivan Ostapov
-                                                .email-field perlrulit@mail.ru
-                                                .role-field editor
-                                                .time-field 2w 4d
-                                        .member.col-xs-12
-                                            .col-xs-3
-                                                .ava-field
-                                                    img(src="images/default-ava.jpg")
-                                            .col-xs-9
-                                                button.close(type="button" aria-label="Remove member") &times;
-                                                .name-field Vasya Pupkin
-                                                .email-field vasyatrahenbahen@gmail.com
-                                                .role-field editor
-                                                .time-field 4d 7h 15m
-
-                                        .member.col-xs-12
-                                            .col-xs-3
-                                                .ava-field
-                                                    img(src="images/default-ava.jpg")
-                                            .col-xs-9
-                                                button.close(type="button" aria-label="Remove member") &times;
-                                                .name-field Kolya Petkin
-                                                .email-field abrahadabra@gmail.com
-                                                .role-field executor
-                                                .time-field 1w 3d 4h 25m
-
-                                        .member.col-xs-12
-                                            .col-xs-3
-                                                .ava-field
-                                                    img(src="images/default-ava.jpg")
-                                            .col-xs-9
-                                                button.close(type="button" aria-label="Remove member") &times;
-                                                .name-field Ivan Ostapov
-                                                .email-field perlrulit@mail.ru
-                                                .role-field editor
-                                                .time-field 2w 4d
-                                        .member.col-xs-12
-                                            .col-xs-3
-                                                .ava-field
-                                                    img(src="images/default-ava.jpg")
-                                            .col-xs-9
-                                                button.close(type="button" aria-label="Remove member") &times;
-                                                .name-field Vasya Pupkin
-                                                .email-field vasyatrahenbahen@gmail.com
-                                                .role-field editor
-                                                .time-field 4d 7h 15m
-
-                                        .member.col-xs-12
-                                            .col-xs-3
-                                                .ava-field
-                                                    img(src="images/default-ava.jpg")
-                                            .col-xs-9
-                                                button.close(type="button" aria-label="Remove member") &times;
-                                                .name-field Kolya Petkin
-                                                .email-field abrahadabra@gmail.com
-                                                .role-field editor
-                                                .time-field 1w 3d 4h 25m
-
-                                        .member.col-xs-12
-                                            .col-xs-3
-                                                .ava-field
-                                                    img(src="images/default-ava.jpg")
-                                            .col-xs-9
-                                                button.close(type="button" aria-label="Remove member") &times;
-                                                .name-field Ivan Ostapov
-                                                .email-field perlrulit@mail.ru
-                                                .role-field editor
-                                                .time-field 2w 4d
+                                    .row#noMembers
+                                        p There is no members yet...
+                                    .row
                                         .member#newMember.col-xs-12
                                             form
                                                 label.sr-only(for="email") Email
@@ -180,8 +88,8 @@ html
                                                             option(value="executor") Executor
                                                             option(value="read-only") Read-only
                                                 button.btn.btn-primary.btn-save-member(type="submit") Save
-
-                                    .btn.btn-primary.btn-block(onclick="showNewMemberForm()") Add member
+                                    .row
+                                        .btn.btn-primary.btn-block(onclick="showNewMemberForm()") Add member
                                 .modal-footer
                                     p Enable read-only access by link:
                                     input#accessLink(type="text" value="very complicated link")

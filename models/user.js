@@ -16,7 +16,7 @@ var schema = new Schema({
         type: String,
         required: true
     },
-    photoUrl: {
+    avatar: {
         type: String,
         default: "images/default-ava.jpg"
     },

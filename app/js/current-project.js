@@ -19,7 +19,8 @@ var noTasks = document.createElement('div');
 noTasks.className = "no-tasks";
 noTasks.style.display = "none";
 
-var currentUrl = (location.origin + location.pathname + "/").replace(/\/*$/, "/");
+//var currentUrl = (location.origin + location.pathname + "/").replace(/\/*$/, "/");
+var currentUrl = (window.location.href).replace(/[\/#]*$/, "/");
 
 $(document).ready(function () {
     taskTitle = $('#taskTitle')[0];

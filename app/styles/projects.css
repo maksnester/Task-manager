@@ -105,6 +105,9 @@ body {
 /*members modal*/
 #membersModal .btn-block {
     margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 96%;
 }
 
 #membersContainer {
@@ -145,4 +148,8 @@ body {
 
 #newMember {
     display: none;
+}
+
+#noMembers {
+    padding-left: 15px;
 }
