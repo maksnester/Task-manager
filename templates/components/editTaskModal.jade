@@ -16,6 +16,9 @@
                   label(for="taskPriority") Priority
                   input#editTaskPriority.form-control(type="number" min="1" max="5" step="1" value="3")
                .form-group
+                  label(for="editTaskAssigned") Assigned to:
+                  select#editTaskAssigned.form-control
+               .form-group
                   label(for="taskComments") Comments
                   #taskComments
                      |No comments

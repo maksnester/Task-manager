@@ -4,6 +4,7 @@
   "description": "Simple task manager",
   "main": "server.js",
   "dependencies": {
+    "async": "^0.9.0",
     "body-parser": "^1.11.0",
     "connect-mongo": "^0.7.0",
     "crypto": "0.0.3",

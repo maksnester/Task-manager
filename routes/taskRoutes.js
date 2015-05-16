@@ -1,14 +1,18 @@
 'use strict';
 
+var async = require('async');
+
 var express = require('express');
 var taskRoutes = express.Router();
 var bodyParser = require('body-parser');
 var checkAuth = require('routes/authRoutes').checkAuth;
+var parseBody = bodyParser.urlencoded({extended: false});
+
 var Project = require('models/project').Project;
 var Task = require('models/task').Task;
-var getTimeSpent = require('lib/dateMods').getTimeSpent;
+var User = require('models/user').User;
 
-var parseBody = bodyParser.urlencoded({extended: false});
+var getTimeSpent = require('lib/dateMods').getTimeSpent;
 
 //TODO check rights on all actions
 
@@ -74,23 +78,48 @@ function editTask(req, res, next) {
             return next(err);
         }
 
-        if (req.body.title) task.title = req.body.title;
-        if (req.body.description) task.description = req.body.description;
-        if (req.body.priority) task.priority = parseInt(req.body.priority, 10);
-        if (req.body.isCompleted) task.isCompleted = req.body.isCompleted;
+        async.waterfall([
+            function (callback) {
+                if (req.body.title) task.title = req.body.title;
+                if (req.body.description) task.description = req.body.description;
+                if (req.body.priority) task.priority = parseInt(req.body.priority, 10);
+                if (req.body.isCompleted) task.isCompleted = req.body.isCompleted;
 
-        if (req.body.timeSpent) task.timeSpent += parseInt(req.body.timeSpent, 10);
+                if (req.body.timeSpent) task.timeSpent += parseInt(req.body.timeSpent, 10);
 
-        task.save(function (err, task) {
-            if (err) {
-                console.log("Erorr occured on task update: %s. Task id = %s", err, req.params.task);
-                if (err.name === "ValidationError") return res.status(400).json({error: "ValidationError"});
-                return next(err);
+                // email expected
+                if (req.body.assigned) {
+                    // get user
+                    User.findOne({email: req.body.assigned}, "_id", function (err, user) {
+                        if (err) return callback(err);
+                        if (!user) return callback("user not found by email = " + req.body.assigned);
+                        task.assigned = user._id;
+                        callback(null, task);
+                    });
+                } else {
+                    callback(null, task);
+                }
             }
-            console.log("OK. Project id=%s, task id=%s", req.params.project, req.params.task);
-            task._doc.timeSpent = getTimeSpent(task.timeSpent);
-            res.status(200).json(task);
-        })
+        ], function (err, task) {
+            if (err) return next(err);
+
+            task.save(function (err, task) {
+                if (err) {
+                    console.log("Error occurred on task update: %s. Task id = %s", err, req.params.task);
+
+                    if (err.name === "ValidationError") {
+                        return res.status(400).json({error: "ValidationError"});
+                    }
+                    return next(err);
+
+                }
+
+                console.log("OK. Saved: Project id=%s, task id=%s", req.params.project, req.params.task);
+
+                task._doc.timeSpent = getTimeSpent(task.timeSpent); // ugly
+                res.status(200).json(task);
+            });
+        });
     })
 
 }
@@ -101,8 +130,8 @@ function editTask(req, res, next) {
  * @param res
  * @param next
  */
-function getTaskField (req, res, next) {
-    Task.findById(req.params.task, function(err, task) {
+function getTaskField(req, res, next) {
+    Task.findById(req.params.task).populate({path: 'author assigned', select: "name email"}).exec(function (err, task) {
         if (err) {
             console.error("Error occurred when try to find task with id=%s", req.params.task);
             return next(err);
@@ -110,16 +139,60 @@ function getTaskField (req, res, next) {
         if (!task) res.status(400).json({error: "task not found"});
         console.log("Found task: " + task);
 
-        if (req.query.field) {
+        if (!req.query.field || req.query.field === 'assigned') {
+            getAssignedField(task, function (err, assigned) {
+                if (err) res.status(500).json({error: err});
+                if (req.query.field) {
+                    // need only assigned field
+                    res.json(assigned);
+                } else {
+                    // need whole task
+                    task._doc.assigned = assigned; // replace ref for correct object with info about members
+                    res.json(task);
+                }
+            });
+        } else {
             var responseJson = {};
             responseJson[req.query.field] = task[req.query.field];
             res.json(responseJson);
-        } else res.json(task);
+        }
     });
+
+    /**
+     * Send to callback an object like {assigned: name+email, members: [...]}
+     * @param task
+     * @param callback
+     */
+    function getAssignedField(task, callback) {
+        var result = {members: []};
+        if (task.assigned) {
+            result.assigned = task.assigned.name + ' (' + task.assigned.email + ')';
+        } else {
+            result.assigned = task.author.name + ' (' + task.author.email + ')';
+        }
+        // get other members
+        var q = Project.findById(task.parent, "members").populate("members.user");
+        q.exec(function (err, project) {
+            if (err) {
+                console.error("getAssignedField: Error - %j", err);
+                return callback(err);
+            } else if (!project) {
+                console.error("getAssignedField: Project not found.");
+                return callback("Project not found.");
+            }
+
+            var i = 0;
+            var len = project.members.length;
+            for (; i < len; i++) {
+                result.members.push(project.members[i].user.name + ' (' + project.members[i].user.email + ')');
+            }
+            callback(null, result);
+        });
+    }
 }
 
-function deleteTask (req, res, next) {
-    Task.findById(req.params.task).remove(function(err) {
+function deleteTask(req, res, next) {
+    Task.findById(req.params.task).remove(function (err) {
         if (err) {
             console.error("Error occurred when delete task with id %s. Error: ", req.params.task, err);
             return next(err);

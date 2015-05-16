@@ -39,6 +39,11 @@ var schema = new Schema({
     parent: {
         type: Schema.Types.ObjectId,
         ref: 'Project'
+    },
+    assigned: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        default: this.author
     }
     //TODO add comments
     //TODO add attachments

@@ -56,7 +56,7 @@ function removeMember(req, res, next) {
 
         if (!memberId) return res.status(404).json({error: "User with this email was not found among the project members."});
         project.members.id(memberId).remove();
-        project.save(function(err) {
+        project.save(function (err) {
             if (err) return next(err);
             res.sendStatus(200);
         });

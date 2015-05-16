@@ -13,6 +13,7 @@ var taskTitle,
     editTaskTitle,
     editTaskDescription,
     editTaskPriority,
+    editTaskAssigned,
     editTaskDeleteBtn;
 
 var noTasks = document.createElement('div');
@@ -39,6 +40,7 @@ $(document).ready(function () {
     editTaskTitle = $('#editTaskTitle');
     editTaskDescription = $('#editTaskDescription');
     editTaskPriority = $('#editTaskPriority');
+    editTaskAssigned = $('#editTaskAssigned');
     editTaskDeleteBtn = $('#editTaskDeleteBtn');
 
     var titlePopover = {
@@ -82,7 +84,7 @@ $(document).ready(function () {
     };
 
     editTaskTitle.popover(titlePopover);
-    editTaskTitle[0].onclick = function() {
+    editTaskTitle[0].onclick = function () {
         editTaskTitle.popover('hide');
     };
 });
@@ -118,6 +120,11 @@ function addTask() {
     });
 }
 
+/**
+ * Relocate task to another list and send put-request to the server.
+ * @param element close|open button inside affected task
+ * @param {boolean} isCompleted
+ */
 function setTaskCompleted(element, isCompleted) {
     var parent = $(element.parentNode.parentNode);
     var id = parent[0].dataset.ouid;
@@ -161,6 +168,14 @@ function setTaskCompleted(element, isCompleted) {
             console.error("Server responded with: " + textStatus);
         }
     });
+}
+
+/**
+ * Just check if task inside list of currentTasks or finished.
+ * @param taskId
+ */
+function isTaskCompleted(taskId) {
+    return ($('[data-ouid=' + taskId + ']', finishedTasksContainer).length) ? true : false;
 }
 
 //dom element which called modal window for adding timeSpent
@@ -211,18 +226,56 @@ function addTimeSpent(event) {
     });
 }
 
+/**
+ * Send a request to fill edit modal
+ * @param titleCol
+ */
 function showTaskEditModal(titleCol) {
     task = titleCol.parentNode;
     var id = task.dataset.ouid;
 
-    // fill edit modal
-    editTaskPriority[0].value = task.children[0].innerText;
-    editTaskTitle[0].value = task.children[1].innerText;
-    getFieldById(id, "description").done(function(jqXHR) {
-        editTaskDescription[0].value = jqXHR.description || null;
+    // no field specified. Expected whole task with all fields.
+    getFieldById(id).done(function (responsedTask) {
+        editTaskTitle[0].value = responsedTask.title;
+        editTaskDescription[0].value = responsedTask.description || null;
+        editTaskPriority[0].value = responsedTask.priority;
+
+        editTaskAssigned.empty();
+        // assigned format: {assigned: name (email), members: [name (email),...]} and assigned duplicates inside members
+        // convert it to options
+        responsedTask.assigned.members.forEach(function (member, i) {
+            var selected = (member === responsedTask.assigned.assigned) ? "selected" : "";
+            editTaskAssigned.append('<option ' + selected + ' value="' + i + '">' + member + '</option>');
+        });
+
+        // also reset priority, title, timeSpent in the tasks list. And check if task already completed.
+        task.children[0].innerText = responsedTask.priority;
+        task.children[1].innerText = responsedTask.title;
+        task.children[2].innerText = getTimeSpent(responsedTask.timeSpent) || 'none';
+        if (isTaskCompleted(id) !== responsedTask.isCompleted) {
+            var btn,
+                btnCol = $('.state-change-col', task);
+            if (btnCol.length) {
+                btn = btnCol[0].childNodes[0] || btnCol[0].firstChild;
+                setTaskCompleted(btn, responsedTask.isCompleted);
+            }
+        }
     });
 
     editTaskModal.modal('show');
+
+    //__v: 0
+    //_id: "5556bfbd4daaf56c07193a71"
+    //assigned: {_id: "5556bf254daaf56c07193a6e", email: "pretty@email.com", name: "My Truly Name"}
+    //author: {_id: "5556bf254daaf56c07193a6e", email: "pretty@email.com", name: "My Truly Name"}
+    //created: "2015-05-16T03:36:49.978Z"
+    //description: "Normal"
+    //isCompleted: false
+    //lastMod: "2015-05-16T11:36:37.325Z"
+    //parent: "5556bfb04daaf56c07193a6f"
+    //priority: 3
+    //timeSpent: 0
+    //title: "First task!"
 }
 
 function editTask() {
@@ -238,15 +291,17 @@ function editTask() {
         data: {
             title: editTaskTitle[0].value,
             description: editTaskDescription[0].value,
-            priority: editTaskPriority[0].value
+            priority: editTaskPriority[0].value,
+            assigned: getAssigned()
         },
-        success: function(jqXHR, status) {
+        success: function (jqXHR, status) {
             console.info("Server respond with: " + status + ". Task " + id + " is updated;");
+            // update in list
             task.children[0].innerText = jqXHR.priority;
             task.children[1].innerText = jqXHR.title;
             editTaskModal.modal('hide');
         },
-        error: function(jqXHR, status) {
+        error: function (jqXHR, status) {
             console.error("Server respond with: " + status);
 
             if (typeof jqXHR.responseJSON != "undefined" &&
@@ -256,6 +311,22 @@ function editTask() {
             }
         }
     });
+
+    function getAssigned() {
+        var selected,
+            len = editTaskAssigned[0].options.length,
+            i = 0;
+        for (; i < len; i++) {
+            if (editTaskAssigned[0].options[i].selected) {
+                selected = editTaskAssigned[0].options[i];
+                break;
+            }
+        }
+        var emailStart = selected.text.indexOf('(') + 1,
+            emailEnd = selected.text.indexOf(')');
+
+        return selected.text.slice(emailStart, emailEnd);
+    }
 }
 
 function deleteTask() {
@@ -264,64 +335,28 @@ function deleteTask() {
     $.ajax({
         url: currentUrl + id,
         method: "delete",
-        success: function(jqXHR, status) {
+        success: function (jqXHR, status) {
             console.info("Server respond with: " + status + ". Task " + id + " is deleted;");
             task.remove();
             editTaskModal.modal('hide');
         },
-        error: function(jqXHR, status) {
+        error: function (jqXHR, status) {
             console.error("Server respond with: " + status);
         }
     });
 }
 
-function getFieldById(id, field) {
+function getFieldById(taskId, field) {
     return $.ajax({
-        url: currentUrl + id,
+        url: currentUrl + taskId,
         method: "get",
         data: {
             field: field
         },
-        error: function(jqXHR, status) {
-            console.error("Error while getting " + field + " for task " + id + ". Server respond with: " + status || error);
+        error: function (jqXHR, status) {
+            console.error("Error while getting " + field + " for task " + taskId + ". Server respond with: " + status || error);
         }
     });
-}
-
-/**
- * Переводит строку вида 1w 3d 4h 10m в количество минут
- * @param timeSpent
- * @returns {number}
- */
-function getDeltaTime(timeSpent) {
-    if (typeof timeSpent !== 'string') return null; // parse error
-    timeSpent = timeSpent.trim();
-    var result = 0;
-
-    var units = {
-        w: 60 * 8 * 7,
-        d: 60 * 8,
-        h: 60,
-        m: 1
-    };
-
-    var regexpStr;
-    var matches;
-    for (var unit in units) {
-        if (units.hasOwnProperty(unit)) {
-            regexpStr = "[0-9]+" + unit;
-            matches = timeSpent.match(new RegExp(regexpStr), 'ig');
-
-            if (matches) {
-                if (matches.length > 1) return null; // parse error
-                // units.unit is time coefficient means how many minutes in unit
-                result += Number.parseInt(matches[0].slice(0, -1), 10) * units[unit];
-            }
-        }
-    }
-
-    if (timeSpent[0] === "-") result *= (-1);
-    return result;
 }
 
 var prevSort;
@@ -332,7 +367,7 @@ var order = 1; // 1 is primary order
  * @param tasks - one of this selectors "#current-tasks" or "#finished-tasks"
  */
 function sortBy(field, tasks) {
-    order = prevSort === field ? (-1)*order : 1;
+    order = prevSort === field ? (-1) * order : 1;
     prevSort = field;
 
     var sortByString = function (a, b) {
@@ -340,7 +375,7 @@ function sortBy(field, tasks) {
     };
 
     var sortByNumber = function (a, b) {
-        if (isNaN(a.innerText) || isNaN(b.innerText)) return sortByString(a,b);
+        if (isNaN(a.innerText) || isNaN(b.innerText)) return sortByString(a, b);
         if (a.innerText === b.innerText) return 0;
         return order * (parseInt(a.innerText, 10) > parseInt(b.innerText, 10) ? 1 : -1);
     };
@@ -356,10 +391,16 @@ function sortBy(field, tasks) {
     };
 
     var sortFunction;
-    switch(field) {
-        case ".taskTitle-col" : sortFunction = sortByString; break;
-        case ".priority-col" : sortFunction = sortByNumber; break;
-        case ".timeSpent-col" : sortFunction = sortByTimeSpent; break;
+    switch (field) {
+        case ".taskTitle-col" :
+            sortFunction = sortByString;
+            break;
+        case ".priority-col" :
+            sortFunction = sortByNumber;
+            break;
+        case ".timeSpent-col" :
+            sortFunction = sortByTimeSpent;
+            break;
     }
 
     var list = $(tasks);
