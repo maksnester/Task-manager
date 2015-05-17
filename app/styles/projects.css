@@ -153,3 +153,9 @@ body {
 #noMembers {
     padding-left: 15px;
 }
+
+#accessLink {
+    display: inline;
+    width: 59%;
+    margin-right: 5px;
+}
