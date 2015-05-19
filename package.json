@@ -2,6 +2,7 @@
   "name": "MyProgress",
   "version": "1.0.0",
   "description": "Simple task manager",
+  "repository": "https://github.com/Alendorff/Task-manager",
   "main": "server.js",
   "dependencies": {
     "async": "^0.9.0",
@@ -11,13 +12,13 @@
     "express": "^4.11.1",
     "express-session": "^1.10.3",
     "jade": "^1.9.2",
-    "mongoose": "^3.8.22",
+    "mongoose": "^4.x.x",
     "nconf": "^0.7.1"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "set NODE_PATH=.; && node server.js"
+    "start": "set NODE_PATH=.; && node server.js --harmony"
   },
   "author": "Alendorff",
   "license": "MIT"

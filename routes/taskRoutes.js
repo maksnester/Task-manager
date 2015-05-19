@@ -11,11 +11,13 @@ var parseBody = bodyParser.urlencoded({extended: false});
 var Project = require('models/project').Project;
 var Task = require('models/task').Task;
 var User = require('models/user').User;
+var TimeJournal = require('models/timeJournal').TimeJournal;
 
 var getTimeSpent = require('lib/dateMods').getTimeSpent;
 
 //TODO check rights on all actions
 
+taskRoutes.get('/projects/:project/timeJournal', checkAuth, getTimeJournal);
 taskRoutes.get('/projects/:project/:task', checkAuth, getTaskField);
 
 taskRoutes.post('/projects/:id/new', parseBody, checkAuth, createTask);
@@ -78,50 +80,59 @@ function editTask(req, res, next) {
             return next(err);
         }
 
-        async.waterfall([
-            function (callback) {
-                if (req.body.title) task.title = req.body.title;
-                if (req.body.description) task.description = req.body.description;
-                if (req.body.priority) task.priority = parseInt(req.body.priority, 10);
-                if (req.body.isCompleted) task.isCompleted = req.body.isCompleted;
+        if (req.body.title) task.title = req.body.title;
+        if (req.body.description) task.description = req.body.description;
+        if (req.body.priority) task.priority = parseInt(req.body.priority, 10);
+        if (req.body.isCompleted) task.isCompleted = req.body.isCompleted;
 
-                if (req.body.timeSpent) task.timeSpent += parseInt(req.body.timeSpent, 10);
+        var readyToSave = Promise.resolve(task);
+        var timeJournalUpdated = Promise.resolve();
 
-                // email expected
-                if (req.body.assigned) {
-                    // get user
-                    User.findOne({email: req.body.assigned}, "_id", function (err, user) {
-                        if (err) return callback(err);
-                        if (!user) return callback("user not found by email = " + req.body.assigned);
+        if (req.body.timeSpent) {
+            var addedTime = parseInt(req.body.timeSpent, 10);
+            task.timeSpent += addedTime;
+
+            var journalEntry = new TimeJournal({
+                task: task._id,
+                user: req.currentUser,
+                date: new Date(),
+                timeSpent: addedTime
+            });
+
+            // add record to journal
+            timeJournalUpdated = timeJournalUpdated.then(journalEntry.save());
+        }
+
+        if (req.body.assigned) {
+            readyToSave = readyToSave
+                .then(function (task) {
+                    var userFound = User.findOne({email: req.body.assigned}, "_id").exec(); // get user
+                    return userFound.then(function (user) {
+                        if (!user) throw new Error("user not found with email = " + req.body.assigned);
                         task.assigned = user._id;
-                        callback(null, task);
+                        return task;
                     });
-                } else {
-                    callback(null, task);
-                }
-            }
-        ], function (err, task) {
-            if (err) return next(err);
+                });
+        }
 
+        Promise.all([readyToSave, timeJournalUpdated]).then(function (results) {
+            var task = results[0];
             task.save(function (err, task) {
-                if (err) {
-                    console.log("Error occurred on task update: %s. Task id = %s", err, req.params.task);
-
-                    if (err.name === "ValidationError") {
-                        return res.status(400).json({error: "ValidationError"});
-                    }
-                    return next(err);
-
-                }
-
                 console.log("OK. Saved: Project id=%s, task id=%s", req.params.project, req.params.task);
 
                 task._doc.timeSpent = getTimeSpent(task.timeSpent); // ugly
                 res.status(200).json(task);
             });
+        }, function (err) {
+
+            console.log("Error occurred on task update: %s. Task id = %s", err, req.params.task);
+            if (err.name === "ValidationError") {
+                return res.status(400).json({error: "ValidationError"});
+            }
+
+            next(err);
         });
     })
-
 }
 
 /**
@@ -199,6 +210,33 @@ function deleteTask(req, res, next) {
         }
         res.sendStatus(200);
     })
+}
+
+/**
+ * Sends timeJournal for project. Needs for visualisation.
+ * @param req
+ * @param res
+ * @param next
+ */
+function getTimeJournal(req, res, next) {
+    Task.find({parent: req.params.project}, "_id").exec()
+        .then(function (taskIds) {
+            var ids = taskIds.map(function(doc) {return doc._id});
+            return TimeJournal.find({'task': {$in: ids}}, "task user timeSpent date")
+                .populate([
+                    {path: 'task', select: 'title isCompleted timeSpent'},
+                    {path: 'user', select: 'name email'}
+                ])
+                .exec();
+        })
+        .then(function (journalRecords) {
+            var response = journalRecords.map(function(record) { delete record._doc._id; return record;});
+            res.send(response);
+        })
+        .then(null, function(err) {
+            console.error(err);
+            return next(err);
+        });
 }
 
 module.exports = taskRoutes;

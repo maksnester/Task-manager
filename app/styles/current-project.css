@@ -2,10 +2,22 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
-#dummy {
-    border:solid 1px black;
-    height: 400px;
-    background: url("/images/chart-example.png");
+#chart {
+    margin: 16px 0;
+}
+
+#visualisation {
+    box-sizing: border-box;
+    width: 100%;
+    height: 700px;
+    overflow-y: auto;
+}
+
+.ajax-loader {
+    width: 64px;
+    height: 64px;
+    margin: 100px auto;
+    background: url('/images/ajax-loader.gif') no-repeat;
     background-size: cover;
 }
 

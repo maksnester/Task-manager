@@ -7,7 +7,7 @@ html
         //custom
         link(rel="stylesheet" href="/styles/current-project.css")
         script(src="/js/lib.js")
-        script(src="/js/current-project.js")
+        script(src="/js/current-project/current-project.js")
         title Project view
     body
         include components/navbar.jade
@@ -19,7 +19,7 @@ html
                         #task-list
                             include components/task-list.jade
                         #chart
-                            include components/chart-carousel.jade
+                            include components/visualization.jade
                     else
                         .panel.panel-primary
                             .panel-heading
@@ -31,6 +31,3 @@ html
         include components/newTaskModal.jade
         include components/timeSpentModal.jade
         include components/editTaskModal.jade
-
-        footer.container-fluid
-            | my footer here
