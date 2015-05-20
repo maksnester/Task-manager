@@ -107,15 +107,14 @@ function addTask() {
         success: function (data, textStatus, jqXHR) {
             location.reload();
         },
-        error: function (jqXHR, textStatus, errorThrown) {
-            if (typeof jqXHR.responseJSON != "undefined" &&
-                typeof jqXHR.responseJSON.error != "undefined" &&
-                jqXHR.responseJSON.error === "emptyTitle") {
+        error: function (err) {
+            if (typeof err.responseJSON !== "undefined" &&
+                typeof err.responseJSON.error !== "undefined" &&
+                err.responseJSON.error === "emptyTitle") {
                 $(taskTitle).popover('show');
+            } else {
+                console.error(err);
             }
-        },
-        complete: function (jqXHR, status) {
-            console.info("Server response with " + status || "Ok");
         }
     });
 }
@@ -226,6 +225,8 @@ function addTimeSpent(event) {
     });
 }
 
+var oldValues = {}; // values before edit
+
 /**
  * Send a request to fill edit modal
  * @param titleCol
@@ -234,30 +235,41 @@ function showTaskEditModal(titleCol) {
     task = titleCol.parentNode;
     var id = task.dataset.ouid;
 
+    // clean oldValues
+    for (var prop in oldValues) {
+        if (oldValues.hasOwnProperty(prop)) {
+            delete oldValues[prop];
+        }
+    }
+
     // no field specified. Expected whole task with all fields.
-    getFieldById(id).done(function (responsedTask) {
-        editTaskTitle[0].value = responsedTask.title;
-        editTaskDescription[0].value = responsedTask.description || null;
-        editTaskPriority[0].value = responsedTask.priority;
+    getFieldById(id).done(function (taskFromResponse) {
+        oldValues.title = editTaskTitle[0].value = taskFromResponse.title;
+        oldValues.description = editTaskDescription[0].value = taskFromResponse.description || null;
+        oldValues.priority = editTaskPriority[0].value = taskFromResponse.priority;
 
         editTaskAssigned.empty();
         // assigned format: {assigned: name (email), members: [name (email),...]} and assigned duplicates inside members
         // convert it to options
-        responsedTask.assigned.members.forEach(function (member, i) {
-            var selected = (member === responsedTask.assigned.assigned) ? "selected" : "";
+        taskFromResponse.assigned.members.forEach(function (member, i) {
+            var selected =  "";
+            if (member === taskFromResponse.assigned.assigned) {
+                selected = 'selected';
+                oldValues.assigned = i;
+            }
             editTaskAssigned.append('<option ' + selected + ' value="' + i + '">' + member + '</option>');
         });
 
         // also reset priority, title, timeSpent in the tasks list. And check if task already completed.
-        task.children[0].innerText = responsedTask.priority;
-        task.children[1].innerText = responsedTask.title;
-        task.children[2].innerText = getTimeSpent(responsedTask.timeSpent) || 'none';
-        if (isTaskCompleted(id) !== responsedTask.isCompleted) {
+        task.children[0].innerText = taskFromResponse.priority;
+        task.children[1].innerText = taskFromResponse.title;
+        task.children[2].innerText = getTimeSpent(taskFromResponse.timeSpent) || 'none';
+        if (isTaskCompleted(id) !== taskFromResponse.isCompleted) {
             var btn,
                 btnCol = $('.state-change-col', task);
             if (btnCol.length) {
                 btn = btnCol[0].childNodes[0] || btnCol[0].firstChild;
-                setTaskCompleted(btn, responsedTask.isCompleted);
+                setTaskCompleted(btn, taskFromResponse.isCompleted);
             }
         }
     });
@@ -285,15 +297,16 @@ function editTask() {
     }
 
     var id = task.dataset.ouid;
+
+    var modifiedFields = getModifiedFields();
+
+    // nothing was modified
+    if (!Object.keys(modifiedFields).length) editTaskModal.modal('hide');
+
     $.ajax({
         url: currentUrl + id,
         method: "put",
-        data: {
-            title: editTaskTitle[0].value,
-            description: editTaskDescription[0].value,
-            priority: editTaskPriority[0].value,
-            assigned: getAssigned()
-        },
+        data: modifiedFields,
         success: function (jqXHR, status) {
             console.info("Server respond with: " + status + ". Task " + id + " is updated;");
             // update in list
@@ -327,6 +340,23 @@ function editTask() {
 
         return selected.text.slice(emailStart, emailEnd);
     }
+
+    function getModifiedFields () {
+        var modifiedFields = {};
+        if (oldValues.title !== editTaskTitle[0].value) {
+            modifiedFields.title = editTaskTitle[0].value;
+        }
+        if (oldValues.description !== editTaskDescription[0].value) {
+            modifiedFields.description = editTaskDescription[0].value;
+        }
+        if (oldValues.priority !== editTaskPriority[0].value) {
+            modifiedFields.priority = editTaskPriority[0].value;
+        }
+        if (oldValues.assigned !== editTaskAssigned[0].selectedIndex) {
+            modifiedFields.assigned = getAssigned();
+        }
+        return modifiedFields;
+    }
 }
 
 function deleteTask() {
@@ -346,6 +376,12 @@ function deleteTask() {
     });
 }
 
+/**
+ *
+ * @param taskId
+ * @param [field] if not specified requests for all fields
+ * @returns {Promise}
+ */
 function getFieldById(taskId, field) {
     return $.ajax({
         url: currentUrl + taskId,
@@ -354,7 +390,7 @@ function getFieldById(taskId, field) {
             field: field
         },
         error: function (jqXHR, status) {
-            console.error("Error while getting " + field + " for task " + taskId + ". Server respond with: " + status || error);
+            console.error("Error while getting " + (field || 'all fields') + " for task " + taskId + ". Server respond with: " + status || error);
         }
     });
 }

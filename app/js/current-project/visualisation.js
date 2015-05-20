@@ -41,7 +41,7 @@ $(document).on('ready', function() {
         for (var i = 0; i < itemCount; i++) {
             var trackDate = moment(journal[i].date);
             items.add({
-                id: i, // try with task._id
+                id: i,
                 group: journal[i].user._id,
                 content: journal[i].task.title,
                 start: trackDate.clone().subtract(journal[i].timeSpent, 'minutes'),
