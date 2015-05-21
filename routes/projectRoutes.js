@@ -45,16 +45,24 @@ function removeMember(req, res, next) {
 
             // find user among the members
             var memberId,
+                removedMember,
                 len = project.members.length,
                 i = 0;
             for (; i < len; i++) {
                 if (project.members[i].user.email === email) {
                     memberId = project.members[i]._id;
+                    removedMember = project.members[i];
                     break;
                 }
             }
 
             if (!memberId) return res.status(404).json({error: "User with this email was not found among the project members."});
+            // no one can remove owner
+            if (removedMember.user._id.equals(project.owner)) {
+                var error = "Project owner can not be deleted.";
+                console.error(error);
+                return res.status(400).json({error: error})
+            }
             project.members.id(memberId).remove();
             project.save(function (err) {
                 if (err) return next(err);
