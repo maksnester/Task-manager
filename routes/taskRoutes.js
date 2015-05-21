@@ -15,6 +15,7 @@ var TimeJournal = require('models/timeJournal').TimeJournal;
 
 var getTimeSpent = require('lib/dateMods').getTimeSpent;
 var checkRights = require('lib/permissions').checkRights;
+var mailer = require('lib/mailer');
 
 taskRoutes.get('/projects/:project/timeJournal', checkAuth, getTimeJournal);
 taskRoutes.get('/projects/:project/:task', checkAuth, getTaskField);
@@ -141,6 +142,10 @@ function editTask(req, res, next) {
                 task.save(function (err, task) {
                     console.log("OK. Saved: Project id=%s, task id=%s", req.params.project, req.params.task);
 
+                    // send email for assigned
+                    if (req.body.assigned) {
+                        mailer.notifyAssigned(req.body.assigned, task.id, req.currentUser);
+                    }
                     task._doc.timeSpent = getTimeSpent(task.timeSpent); // ugly
                     res.status(200).json(task);
                 });

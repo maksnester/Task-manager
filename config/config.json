@@ -1,5 +1,6 @@
 {
   "port": 8080,
+  "host": "localhost",
   "mongoose": {
     "uri": "mongodb://localhost/tdb"
   },
@@ -8,5 +9,9 @@
     "name": "sid",
     "saveUninitialized": "false",
     "resave": "false"
+  },
+  "nodemailer": {
+    "user": "free.taskmanager@gmail.com",
+    "pass": "actual password here..."
   }
 }
