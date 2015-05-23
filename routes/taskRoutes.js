@@ -88,11 +88,11 @@ function editTask(req, res, next) {
 
         var updatedFields = [];
         if (req.body.title) {
-            task.title = req.body.title;
+            task.title = req.body.title.trim();
             updatedFields.push('taskTitle');
         }
-        if (req.body.description) {
-            task.description = req.body.description;
+        if (req.body.description || req.body.description === '') {
+            task.description = req.body.description.trim();
             updatedFields.push('taskDescription');
         }
         if (req.body.priority) {

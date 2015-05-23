@@ -1,3 +1,5 @@
+var visualization = {};
+
 $(document).on('ready', function() {
     var loader = $('.ajax-loader');
 
@@ -37,27 +39,43 @@ $(document).on('ready', function() {
         var itemCount = journal.length;
 
         // create a dataset with items
-        var items = new vis.DataSet();
+        visualization.items = new vis.DataSet();
+        var trackDate;
         for (var i = 0; i < itemCount; i++) {
-            var trackDate = moment(journal[i].date);
-            items.add({
+            trackDate = moment(journal[i].date);
+            visualization.items.add({
                 id: i,
                 group: journal[i].user._id,
                 content: journal[i].task.title,
                 start: trackDate.clone().subtract(journal[i].timeSpent, 'minutes'),
-                end: trackDate
+                end: trackDate,
+                taskId: journal[i].task._id
             });
         }
 
         // create visualization
-        var container = document.getElementById('visualization');
+        visualization.container = document.getElementById('visualization');
         var options = {
-            groupOrder: 'content'  // groupOrder can be a property name or a sorting function
+            groupOrder: 'content',  // groupOrder can be a property name or a sorting function
+            zoomMax: 1000*60*60*24*366,
+            zoomMin: 1000*60*10,
+            multiselect: true
         };
 
-        var timeline = new vis.Timeline(container);
-        timeline.setOptions(options);
-        timeline.setGroups(groups);
-        timeline.setItems(items);
+        visualization.timeline = new vis.Timeline(visualization.container);
+        visualization.timeline.setOptions(options);
+        visualization.timeline.setGroups(groups);
+        visualization.timeline.setItems(visualization.items);
+
+        visualization.timeline.on('doubleClick', function (properties) {
+            if (properties.item === null) return;
+            var i = properties.item;
+            var id = visualization.items._data[i].taskId;
+            var taskElem = $('[data-ouid="' + id + '"]');
+            if (taskElem.length) {
+                task = taskElem[0];
+                showTaskEditModal();
+            }
+        });
     }
 });

@@ -199,3 +199,18 @@ li.list-group-item.row {
     margin-left: 5px;
     display: inline-block;
 }
+
+.vis-item-overflow:hover {
+    overflow:visible!important;
+    z-index: 100;
+}
+
+.vis-item-overflow:hover .vis-item-content {
+    background-color: rgba(242, 232, 162, 0.88)!important;
+}
+.chart-heading {
+    margin-top: 60px;
+}
+.vis-item {
+    min-width: 4px;
+}

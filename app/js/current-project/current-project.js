@@ -240,6 +240,8 @@ function addTimeSpent(event) {
 
             if (status) console.info("Success, status: " + status);
             timeSpentModal.modal('hide');
+
+
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.error("Server responded with: " + textStatus);
@@ -260,7 +262,10 @@ var oldValues = {}; // values before edit
  * @param titleCol
  */
 function showTaskEditModal(titleCol) {
-    task = titleCol.parentNode;
+    if (titleCol) {
+        task = titleCol.parentNode;
+    }
+
     var id = task.dataset.ouid;
 
     // clean oldValues
@@ -273,7 +278,7 @@ function showTaskEditModal(titleCol) {
     // no field specified. Expected whole task with all fields.
     getFieldById(id).done(function (taskFromResponse) {
         oldValues.title = editTaskTitle[0].value = taskFromResponse.title;
-        oldValues.description = editTaskDescription[0].value = taskFromResponse.description || null;
+        oldValues.description = editTaskDescription[0].value = taskFromResponse.description || '';
         oldValues.priority = editTaskPriority[0].value = taskFromResponse.priority;
 
         editTaskAssigned.empty();
