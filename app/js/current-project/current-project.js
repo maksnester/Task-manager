@@ -14,7 +14,11 @@ var taskTitle,
     editTaskDescription,
     editTaskPriority,
     editTaskAssigned,
-    editTaskDeleteBtn;
+    taskAttachments,
+    hiddenAttach,
+    attachForm,
+    editTaskDeleteBtn,
+    editTaskAttachBtn;
 
 var noTasks = document.createElement('div');
 noTasks.className = "no-tasks";
@@ -42,6 +46,9 @@ $(document).ready(function () {
     editTaskPriority = $('#editTaskPriority');
     editTaskAssigned = $('#editTaskAssigned');
     editTaskDeleteBtn = $('#editTaskDeleteBtn');
+
+    editTaskAttachBtn = $('#editTaskAttachBtn');
+    taskAttachments = $('tbody', '#taskAttachments');
 
     var titlePopover = {
         html: true,
@@ -87,6 +94,27 @@ $(document).ready(function () {
     editTaskTitle[0].onclick = function () {
         editTaskTitle.popover('hide');
     };
+
+    hiddenAttach = $('#hiddenAttach');
+    editTaskAttachBtn.on('click', function () {
+        hiddenAttach.click();
+    });
+
+    attachForm = $('#attachForm');
+
+    hiddenAttach.change(function () {
+        if (!this.files.length) return;
+        addNewAttach.call(this);
+    });
+
+    //attach remove btn
+    taskAttachments.on("click", function (event) {
+        if (event.target.className === 'close' && event.target.tagName === "BUTTON") {
+            var tr = event.target.parentNode.parentNode;
+            removeAttachment(tr);
+        }
+    });
+
 });
 
 function addTask() {
@@ -252,13 +280,16 @@ function showTaskEditModal(titleCol) {
         // assigned format: {assigned: name (email), members: [name (email),...]} and assigned duplicates inside members
         // convert it to options
         taskFromResponse.assigned.members.forEach(function (member, i) {
-            var selected =  "";
+            var selected = "";
             if (member === taskFromResponse.assigned.assigned) {
                 selected = 'selected';
                 oldValues.assigned = i;
             }
             editTaskAssigned.append('<option ' + selected + ' value="' + i + '">' + member + '</option>');
         });
+
+        hiddenAttach.val('');
+        editTaskShowAttachments(taskFromResponse.attachments);
 
         // also reset priority, title, timeSpent in the tasks list. And check if task already completed.
         task.children[0].innerText = taskFromResponse.priority;
@@ -275,19 +306,6 @@ function showTaskEditModal(titleCol) {
     });
 
     editTaskModal.modal('show');
-
-    //__v: 0
-    //_id: "5556bfbd4daaf56c07193a71"
-    //assigned: {_id: "5556bf254daaf56c07193a6e", email: "pretty@email.com", name: "My Truly Name"}
-    //author: {_id: "5556bf254daaf56c07193a6e", email: "pretty@email.com", name: "My Truly Name"}
-    //created: "2015-05-16T03:36:49.978Z"
-    //description: "Normal"
-    //isCompleted: false
-    //lastMod: "2015-05-16T11:36:37.325Z"
-    //parent: "5556bfb04daaf56c07193a6f"
-    //priority: 3
-    //timeSpent: 0
-    //title: "First task!"
 }
 
 function editTask() {
@@ -301,7 +319,10 @@ function editTask() {
     var modifiedFields = getModifiedFields();
 
     // nothing was modified
-    if (!Object.keys(modifiedFields).length) editTaskModal.modal('hide');
+    if (!Object.keys(modifiedFields).length) {
+        editTaskModal.modal('hide');
+        return;
+    }
 
     $.ajax({
         url: currentUrl + id,
@@ -341,7 +362,7 @@ function editTask() {
         return selected.text.slice(emailStart, emailEnd);
     }
 
-    function getModifiedFields () {
+    function getModifiedFields() {
         var modifiedFields = {};
         if (oldValues.title !== editTaskTitle[0].value) {
             modifiedFields.title = editTaskTitle[0].value;
@@ -349,7 +370,7 @@ function editTask() {
         if (oldValues.description !== editTaskDescription[0].value) {
             modifiedFields.description = editTaskDescription[0].value;
         }
-        if (oldValues.priority !== editTaskPriority[0].value) {
+        if (oldValues.priority !== parseInt(editTaskPriority[0].value, 10)) {
             modifiedFields.priority = editTaskPriority[0].value;
         }
         if (oldValues.assigned !== editTaskAssigned[0].selectedIndex) {
@@ -394,6 +415,130 @@ function getFieldById(taskId, field) {
         }
     });
 }
+
+function addNewAttach() {
+    var file = this.files[0];
+    var tr = document.createElement('tr');
+    tr.className = "new";
+
+    var fileNameTd = document.createElement('td');
+    fileNameTd.className = "filename";
+    fileNameTd.innerHTML = file.name;
+
+    var uploadTd = document.createElement('td');
+    uploadTd.className = 'upload';
+    uploadTd.colSpan = 2;
+
+    var dots = '...';
+    var timer = setInterval(function () {
+        if (dots.length === 20) {
+            dots = '...';
+        } else {
+            dots += '.';
+        }
+        uploadTd.innerHTML = dots;
+    }, 1000);
+
+    tr.appendChild(fileNameTd);
+    tr.appendChild(uploadTd);
+
+    if (taskAttachments.children().length) {
+        taskAttachments.append(tr);
+    } else {
+        taskAttachments.html(tr);
+    }
+
+
+    var formData = new FormData(attachForm);
+    formData.append('file', file);
+    $.ajax({
+        url: currentUrl + task.dataset.ouid + '/attachments/new',
+        type: 'POST',
+        data: formData,
+        success: function (data) {
+            console.info("File uploaded");
+            fileNameTd.innerHTML = '<a href="' + window.location.origin + '/' + data.link + '">' + file.name + '</a>';
+
+            uploadTd.className = "";
+            uploadTd.colSpan = 1;
+            uploadTd.innerHTML = moment().calendar();
+
+            var uploaderTd = document.createElement('td');
+            uploaderTd.innerHTML = data.uploader;
+            var closeTd = document.createElement('td');
+            closeTd.innerHTML = '<button type="button" aria-label="Close" class="close">×</button>';
+
+            tr.appendChild(uploaderTd);
+            tr.appendChild(closeTd);
+
+            tr.className = "";
+        },
+        error: function (err) {
+            console.error(err);
+            $(tr).remove();
+        },
+        complete: function () {
+            clearInterval(timer);
+        },
+        cache: false,
+        processData: false,
+        contentType: false
+    });
+}
+
+function editTaskShowAttachments(attachments) {
+    var html;
+    if (!attachments || !attachments.length) {
+        html = 'No attachments.'
+    } else {
+        html = '';
+        //taskAttachments
+        attachments.forEach(function (attach) {
+            html += '<tr>';
+            html += '<td><a href="'
+            html += window.location.origin;
+            html += '/';
+            html += attach.link;
+            html += '">';
+            html += attach.filename;
+            html += '</a></td><td>';
+
+            html += moment(attach.date).calendar();
+            html += '</td><td>';
+
+            html += attach.owner.name;
+            html += '</td><td><button type="button" aria-label="Close" class="close">×</button></td></tr>';
+        });
+    }
+
+    taskAttachments.html(html);
+}
+
+/**
+ *
+ * @param attachTr dom element tr which contains attachment filename
+ */
+function removeAttachment(attachTr) {
+    var a = attachTr.firstChild.firstChild;
+    var filename = a.textContent || a.innerText;
+    $.ajax({
+        url: currentUrl + [task.dataset.ouid, 'attachments', filename].join('/'),
+        method: 'delete',
+        success: function () {
+            console.info('file deleted');
+
+            var parentNode = attachTr.parentNode;
+            attachTr.remove();
+            if (!parentNode.childNodes.length) {
+                parentNode.innerHTML = 'No attachments';
+            }
+        },
+        error: function (err) {
+            console.error(err);
+        }
+    });
+}
+
 
 var prevSort;
 var order = 1; // 1 is primary order

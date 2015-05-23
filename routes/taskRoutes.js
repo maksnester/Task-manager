@@ -1,12 +1,12 @@
 'use strict';
 
-var async = require('async');
-
 var express = require('express');
 var taskRoutes = express.Router();
 var bodyParser = require('body-parser');
-var checkAuth = require('routes/authRoutes').checkAuth;
 var parseBody = bodyParser.urlencoded({extended: false});
+
+var checkAuth = require('routes/authRoutes').checkAuth;
+var attachRoutes = require('routes/attachRoutes');
 
 var Project = require('models/project').Project;
 var Task = require('models/task').Task;
@@ -25,6 +25,8 @@ taskRoutes.post('/projects/:project/new', parseBody, checkAuth, createTask);
 taskRoutes.put('/projects/:project/:task', parseBody, checkAuth, editTask);
 
 taskRoutes.delete('/projects/:project/:task', checkAuth, deleteTask);
+
+taskRoutes.use('/', attachRoutes);
 
 /**
  * Creating a new task for project which id specified in req.params.id
@@ -172,7 +174,7 @@ function getTaskField(req, res, next) {
     checkRights(req.params.project, req.currentUser._id, 'read', 'task', function(err) {
         if (err) return res.status(403).json({error: err.message || err});
         Task.findById(req.params.task).populate({
-            path: 'author assigned',
+            path: 'author assigned attachments.owner',
             select: "name email"
         }).exec(function (err, task) {
             if (err) {

@@ -44,9 +44,24 @@ var schema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         default: this.author
-    }
+    },
+    attachments: [
+        {
+            _id: Schema.Types.ObjectId,
+            link: {type: String, required: true},
+            filename: {type: String, unique: true, required: true},
+            owner: {
+                type: Schema.Types.ObjectId,
+                ref: 'User',
+                required: true
+            },
+            date: {
+                type: Date,
+                default: new Date()
+            }
+        }
+    ]
     //TODO add comments
-    //TODO add attachments
     //TODO add tags
 });
 

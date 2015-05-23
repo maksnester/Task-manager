@@ -12,6 +12,9 @@
   },
   "nodemailer": {
     "user": "free.taskmanager@gmail.com",
-    "pass": "actual password here..."
+    "pass": "XOsKBLDvboMOCIo9"
+  },
+  "storage": {
+    "path": "C:/Programming/jsprog/MyProgress/storage"
   }
 }

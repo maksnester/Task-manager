@@ -92,6 +92,7 @@ app.use(function(req, res){
 
 //обработчик ошибок типа next(new Error('error description'));
 app.use(function (err, req, res, next) {
+    console.error(err);
     res.status(500).send('Internal server error: ' + err);
 });
 

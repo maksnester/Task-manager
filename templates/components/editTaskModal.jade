@@ -1,30 +1,48 @@
 #editTaskModal.modal.fade(tabindex="-1" role="dialog" aria-labelleby="editTaskModalLabel")
-   .modal-dialog
-      .modal-content
-         .modal-header
-            button.close(type="button" data-dismiss="modal" aria-label="Close") &times;
-            h4#editTaskModalLabel.modal-title Edit task
-         form
-            .modal-body
-               .form-group
-                  label(for="taskTitle") Task title
-                  input#editTaskTitle.form-control(type="text" placeholder="Enter the title")
-               .form-group
-                  label(for="taskDescription") Description
-                  textarea#editTaskDescription.form-control(rows="5" placeholder="Add some description...")
-               .form-group
-                  label(for="taskPriority") Priority
-                  input#editTaskPriority.form-control(type="number" min="1" max="5" step="1" value="3")
-               .form-group
-                  label(for="editTaskAssigned") Assigned to:
-                  select#editTaskAssigned.form-control
-               .form-group
-                  label(for="taskComments") Comments
-                  #taskComments
-                     |No comments
-            .modal-footer
-               button.btn.btn-danger#editTaskDeleteBtn(type="button" onclick="deleteTask()")
-                  .fa.fa-trash-o
-                  |&nbsp;Delete
-               button.btn.btn-default(type="button" data-dismiss="modal") Cancel
-               button.btn.btn-primary(type="button" onclick="editTask()") Save
+    .modal-dialog
+        .modal-content
+            .modal-header
+                button.close(type="button" data-dismiss="modal" aria-label="Close") &times;
+                h4#editTaskModalLabel.modal-title Edit task
+            form
+                .modal-body
+                    .form-group
+                        label(for="taskTitle") Task title
+                        input#editTaskTitle.form-control(type="text" placeholder="Enter the title")
+                    .form-group
+                        label(for="taskDescription") Description
+                        textarea#editTaskDescription.form-control(rows="5" placeholder="Add some description...")
+                    .form-group.dib
+                        label(for="taskPriority") Priority
+                        input#editTaskPriority.form-control(type="number" min="1" max="5" step="1" value="3")
+                    .form-group.dib.ml30
+                        label(for="editTaskAssigned") Assigned to
+                        select#editTaskAssigned.form-control
+                    .form-group
+                        label.db(for="taskAttachments") Attachments
+                            #taskAttachments
+                                table.table.table-hover.table-condensed.table-responsive
+                                    thead
+                                        tr
+                                            th File
+                                            th Date
+                                            th(colspan='2') Uploader
+                                    tfoot
+                                        tr
+                                            td(colspan='4')
+                                                form#attachForm(enctype="multipart/form-data")
+                                                    input#hiddenAttach(name='file' type="file" style="visibility:hidden; height: 0;")
+                                                #editTaskAttachBtn.btn.btn-default Attach&nbsp;
+                                                    .glyphicon.glyphicon-open-file
+                                    tbody
+
+                    .form-group
+                        label(for="taskComments") Comments
+                        #taskComments
+                            | No comments
+                .modal-footer
+                    button.btn.btn-danger#editTaskDeleteBtn(type="button" onclick="deleteTask()")
+                        .fa.fa-trash-o
+                        | &nbsp;Delete
+                    button.btn.btn-default(type="button" data-dismiss="modal") Cancel
+                    button.btn.btn-primary(type="button" onclick="editTask()") Save

@@ -166,7 +166,7 @@ function showProjectsList(req, res, next) {
             console.log("Error when getting list of projects: %s", err);
             return next(err);
         }
-        console.log(result);
+        //console.log(result);
         var tempProjectList = [];
         result.forEach(function (project) {
 
@@ -190,8 +190,8 @@ function showProjectsList(req, res, next) {
                 }
             );
         });
-        console.log("___________________________\nResult project list for render: \n___________________________");
-        console.log(tempProjectList);
+        //console.log("___________________________\nResult project list for render: \n___________________________");
+        //console.log(tempProjectList);
         res.append('Cache-control', 'no-store').render('projects.jade', {
             user: req.session.user_id,
             projects: tempProjectList
@@ -235,8 +235,8 @@ function showProjectById(req, res, next) {
                     projectTitle: result.title,
                     tasks: tasks
                 };
-                console.log("For project=%s taks list is:", req.params.id);
-                console.log(renderObjects);
+                //console.log("For project=%s taks list is:", req.params.id);
+                //console.log(renderObjects);
                 res.render('current-project.jade', renderObjects);
             }
         );
