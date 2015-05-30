@@ -8,6 +8,7 @@ var checkAuth = require('routes/authRoutes').checkAuth;
 var Project = require('models/project').Project;
 var Task = require('models/task').Task;
 var User = require('models/user').User;
+var TimeJournal = require('models/timeJournal').TimeJournal;
 
 
 var bodyParser = require('body-parser');
@@ -30,7 +31,7 @@ projectsRoutes.delete('/projects/:id/members/:email', checkAuth, removeMember);
 projectsRoutes.use('/', taskRoutes);
 
 function removeMember(req, res, next) {
-    checkRights(req.params.id, req.currentUser._id, 'delete', 'member', function(err) {
+    checkRights(req.params.id, req.currentUser._id, 'delete', 'member', function (err) {
         if (err) return res.status(403).json({error: err.message || err});
         var email = (req.params.email || "").toLowerCase();
         var projectId = req.params.id;
@@ -80,12 +81,51 @@ function getMembers(req, res, next) {
     query.exec(function (err, project) {
         if (err) return next(err);
         if (!project) res.status(404).json({error: "Project not found"});
-        res.send(project.members);
+
+        // TODO perhaps its more convenient to set presave for time journal which will filling the field inside member
+        var members = project.members;
+
+        var userIds = members.map(function (m) {
+            return m.user._id;
+        });
+
+        var taskIds = project.tasks.map(function (t) {
+            return t;
+        });
+
+        var rules = [
+            {'user': {$in: userIds}},
+            {'task': {$in: taskIds}}
+        ];
+
+        // get timeSpent for each member
+        TimeJournal.aggregate({$match: {$and: rules}})
+            .group({
+                _id: '$user',
+                ts: {$sum: '$timeSpent'}
+            })
+            .exec(function (err, result) {
+                if (err) {
+                    console.error('Error while getting timeSpent for each users: ', err);
+                } else {
+                    var i, len = members.length;
+                    result.forEach(function (elem) {
+                        // elem is aggregation result like: _id: <userId>, timeSpent: <total timeSpent>
+                        for (i = 0; i < len; i++) {
+                            if (members[i].user._id.equals(elem._id)) {
+                                members[i]._doc.timeSpent = elem.ts;
+                                break;
+                            }
+                        }
+                    });
+                }
+                res.send(members);
+            });
     });
 }
 
 function addMember(req, res, next) {
-    checkRights(req.params.id, req.currentUser._id, 'create', 'member', function(err) {
+    checkRights(req.params.id, req.currentUser._id, 'create', 'member', function (err) {
         if (err) return res.status(403).json({error: err.message || err});
         var email = (req.body.email || "").toLowerCase();
         var role = (req.body.role || "").toLowerCase();
@@ -193,7 +233,7 @@ function showProjectsList(req, res, next) {
         //console.log("___________________________\nResult project list for render: \n___________________________");
         //console.log(tempProjectList);
         res.append('Cache-control', 'no-store').render('projects.jade', {
-            user: req.session.user_id,
+            user: req.currentUser,
             projects: tempProjectList
         });
     });
@@ -206,7 +246,7 @@ function showProjectsList(req, res, next) {
  * @param next
  */
 function showProjectById(req, res, next) {
-    checkRights(req.params.id, req.currentUser._id, 'read', 'project', function(err) {
+    checkRights(req.params.id, req.currentUser._id, 'read', 'project', function (err) {
         if (err) return res.status(403).json({error: err.message || err});
         Project.findById(req.params.id).populate('tasks').exec(function (err, result) {
                 if (err) {
@@ -231,7 +271,7 @@ function showProjectById(req, res, next) {
                 }
 
                 var renderObjects = {
-                    user: req.session.user_id,
+                    user: req.currentUser,
                     projectTitle: result.title,
                     tasks: tasks
                 };

@@ -214,3 +214,7 @@ li.list-group-item.row {
 .vis-item {
     min-width: 4px;
 }
+
+body.modal-open .navbar-fixed-top {
+    padding-right: 17px;
+}

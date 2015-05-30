@@ -34,14 +34,16 @@ var membersContainer = (function () {
         html += '"></div></div><div class="col-xs-9"><button class="close" type="button" aria-label="Remove member">&times;</button><div class="name-field">';
         html += member.user.name;
 
-        html += '</div><div class="email-field">';
+        html += '</div><div class="email-field"><a href="mailto:';
+        html += member.user.email;
+        html += '">';
         html += member.user.email;
 
-        html += '</div><div class="role-field">';
+        html += '</a></div><div class="role-field">';
         html += member.role;
 
         html += '</div><div class="time-field">';
-        html += member.timeSpent || 'none';
+        html += (member.timeSpent) ? getTimeSpent(member.timeSpent) : 'none';
 
         html += '</div></div></div>';
 

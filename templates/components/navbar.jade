@@ -10,32 +10,38 @@
         .navbar-collapse.collapse
             ul.nav.navbar-nav
                 li
-                    a(href='/projects') My Projects
-                li
-                    a(href='#about') About
-                li
-                    a(href='#contact') Contact
-                li.dropdown
-                    a.dropdown-toggle(href='#', data-toggle='dropdown')
-                        | Dropdown
-                        span.caret
-                    ul.dropdown-menu(role='menu')
-                        li
-                            a(href='#') Action
-                        li
-                            a(href='#') Another action
-                        li
-                            a(href='#') Something else here
-                        li.divider
-                        li.dropdown-header Nav header
-                        li
-                            a(href='#') Separated link
-                        li
-                            a(href='#') One more separated link
+                    a(href='https://github.com/Alendorff/Task-manager') About
+                //li.dropdown
+                //    a.dropdown-toggle(href='#', data-toggle='dropdown')
+                //        | Dropdown
+                //        span.caret
+                //    ul.dropdown-menu(role='menu')
+                //        li
+                //            a(href='#') Action
+                //        li
+                //            a(href='#') Another action
+                //        li
+                //            a(href='#') Something else here
+                //        li.divider
+                //        li.dropdown-header Nav header
+                //        li
+                //            a(href='#') Separated link
+                //        li
+                //            a(href='#') One more separated link
             ul.nav.navbar-nav.navbar-right
                 if user
                     li
-                        a(href="/logout") Logout
+                        a(href='/projects')
+                            .glyphicon.glyphicon-list(style="margin-right: 5px;")
+                            | My Projects
+                    li
+                        a(href="#")
+                            .glyphicon.glyphicon-user(style="margin-right: 5px;")
+                            |#{user.name}
+                    li
+                        a(href="/logout")
+                            .glyphicon.glyphicon-log-out(style="margin-right: 5px;")
+                            |Logout
                 else
                     li
                         a(href="/register") Register
